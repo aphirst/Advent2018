@@ -90,13 +90,13 @@ contains
     end do
     close(unit)
 
-    do i = 1, size(string)
-      next: do j = i, size(string)
-        if (i == j) cycle next
+    outer: do i = 1, size(string)
+      inner: do j = i, size(string)
+        if (i == j) cycle inner
         if (allocated(diff)) deallocate(diff)
         allocate(diff(0))
         do k = 1, 26
-          if (size(diff) > 1) cycle next
+          if (size(diff) > 1) cycle inner
           if (string(i)(k:k) /= string(j)(k:k)) then
             diff = [diff, k]
           end if
@@ -106,7 +106,7 @@ contains
           print *, string(j)(1:diff(1)-1), string(j)(diff(1)+1:26)
           return
         end if
-      end do next
-    end do
+      end do inner
+    end do outer
   end subroutine
 end module
