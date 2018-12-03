@@ -37,7 +37,10 @@
 		<Unit filename="src/day01.f90">
 			<Option weight="0" />
 		</Unit>
-		<Unit filename="src/day02.f90" />
+		<Unit filename="src/day02.f90">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="src/day03.f90" />
 		<Unit filename="src/main.f90">
 			<Option weight="1" />
 		</Unit>
