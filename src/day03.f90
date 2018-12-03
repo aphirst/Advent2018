@@ -19,6 +19,9 @@ module Day03
 
   type Claim
     integer :: x, y, width, height
+  contains
+    procedure :: x2, y2
+    procedure :: IsOverlap
   end type
 
 contains
@@ -83,6 +86,51 @@ contains
     print *, "Die Anzahl von mehrmals beanspruchten Stoffflächen lautet:", count(fabric > 1)
   end subroutine
 
+  integer function x2(myclaim)
+    class(Claim), intent(in) :: myclaim
+
+    x2 = myclaim%x + myclaim%width
+  end function
+
+  integer function y2(myclaim)
+    class(Claim), intent(in) :: myclaim
+
+    y2 = myclaim%y + myclaim%height
+  end function
+
+  logical function IsOverlap(claim1, claim2)
+    ! compare claims to see whether their regions overlap
+    class(Claim), intent(in) :: claim1, claim2
+
+    isoverlap = .false.
+    if (claim1%x2() <= claim2%x) then
+      return
+    else if (claim1%x >= claim2%x2()) then
+      return
+    else if (claim1%y2() <= claim2%y) then
+      return
+    else if (claim1%y >= claim2%y2()) then
+      return
+    else
+      isoverlap = .true.
+    end if
+  end function
+
   subroutine Problem03b()
+    ! read the fabric claim data structure
+    ! perform bounding-box tests
+    type(Claim), allocatable :: claims(:)
+    integer                  :: i, j
+
+    call ReadClaims(claims)
+
+    outer: do i = 1, size(claims)
+      inner: do j = 1, size(claims)
+        if (i == j) cycle inner
+        if (claims(i)%IsOverlap(claims(j))) cycle outer
+      end do inner
+      print *, "Der Auftrag, der keinen anderen überlappt, ist:", i
+    end do outer
+
   end subroutine
 end module
