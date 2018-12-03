@@ -50,15 +50,14 @@ contains
 
   subroutine ReadClaims(claims)
     type(Claim), intent(out), allocatable :: claims(:)
-    integer                               :: unit, iostat, i
+    integer                               :: unit, iostat
     character(30)                         :: string
-    type(Claim)                           :: newclaim
 
     allocate(claims(0))
 
     open(newunit=unit, file="day03.txt", iostat=iostat, status="old")
-    read(unit, '(a30)', iostat=iostat) string
     if (iostat /= 0) stop "Datenfehler."
+    read(unit, "(a30)", iostat=iostat) string
     do while (iostat == 0)
       claims = [claims, ParseClaim(string)]
       read(unit, "(a30)", iostat=iostat) string
@@ -81,7 +80,7 @@ contains
         fabric(x:x+width-1,y:y+height-1) = fabric(x:x+width-1,y:y+height-1) + 1
       end associate
     end do
-    print *, count(fabric > 1)
+    print *, "Die Anzahl von mehrmals beanspruchten Stoffflächen lautet:", count(fabric > 1)
   end subroutine
 
   subroutine Problem03b()
