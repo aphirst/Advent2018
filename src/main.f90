@@ -16,6 +16,7 @@
 
 program Advent2018
   use Day01
+  use Day02
 
   implicit none
 
@@ -29,6 +30,7 @@ program Advent2018
     call Problem01a()
     call Problem01b()
   case (2)
+    call Problem02a()
   case default
     stop "Kein gültiger Dezembertag!"
   end select
