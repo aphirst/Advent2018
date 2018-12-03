@@ -65,7 +65,7 @@ contains
     end do
     close(unit)
     checksum = twice * thrice
-    print *, 'Prüfsumme lautet:', checksum
+    print *, "Prüfsumme lautet:", checksum
   end subroutine
 
   subroutine Problem02b()
