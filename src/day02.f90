@@ -69,6 +69,42 @@ contains
   end subroutine
 
   subroutine Problem02b()
+    ! read entire array of strings
+    ! for each string, compare with all other strings
+    ! get the indices of different characters
+    ! if list has only 1 index, output string with the different element sliced out
+    integer                    :: unit, iostat, i, j, k
+    character(26)              :: stringtemp
+    character(26), allocatable :: string(:)
+    integer,       allocatable :: diff(:)
 
+    allocate(string(0))
+
+    open(newunit=unit, file="day02.txt", iostat=iostat, status="old")
+    read(unit, *, iostat=iostat) stringtemp
+    do while (iostat == 0)
+      string = [string, stringtemp]
+      read(unit, *, iostat=iostat) stringtemp
+    end do
+    close(unit)
+
+    do i = 1, size(string)
+      next: do j = i, size(string)
+        if (i == j) cycle next
+        if (allocated(diff)) deallocate(diff)
+        allocate(diff(0))
+        do k = 1, 26
+          if (size(diff) > 1) cycle next
+          if (string(i)(k:k) /= string(j)(k:k)) then
+            diff = [diff, k]
+          end if
+        end do
+        if (size(diff) == 1) then
+          print *, string(i)(1:diff(1)-1), string(i)(diff(1)+1:26)
+          print *, string(j)(1:diff(1)-1), string(j)(diff(1)+1:26)
+          return
+        end if
+      end do next
+    end do
   end subroutine
 end module
