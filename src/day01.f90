@@ -32,6 +32,7 @@ module Day01
     nextint = 0
 
     open(newunit=unit, file="day01.txt", iostat=iostat, status="old")
+    if (iostat /= 0) stop "Datenfehler."
     do while (iostat == 0)
       total = total + nextint
       read(unit, *, iostat=iostat) nextint
@@ -67,6 +68,7 @@ module Day01
 
     do
       open(newunit=unit, file="day01.txt", iostat=iostat, status="old")
+      if (iostat /= 0) stop "Datenfehler."
       read(unit, *, iostat=iostat) nextint
       do while (iostat == 0)
         total = [ total, total(ubound(total,1)) + nextint ]

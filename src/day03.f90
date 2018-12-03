@@ -58,6 +58,7 @@ contains
 
     open(newunit=unit, file="day03.txt", iostat=iostat, status="old")
     read(unit, '(a30)', iostat=iostat) string
+    if (iostat /= 0) stop "Datenfehler."
     do while (iostat == 0)
       claims = [claims, ParseClaim(string)]
       read(unit, "(a30)", iostat=iostat) string
