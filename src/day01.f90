@@ -62,6 +62,7 @@ module Day01
     integer(long)              :: nextint
     integer(long), allocatable :: total(:)
 
+    allocate(total(1))
     total = [0]
 
     do
