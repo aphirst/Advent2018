@@ -1,0 +1,5 @@
+bin/
+obj/
+input/*.log
+input/day04_nights.txt
+input/*_sorted.txt
