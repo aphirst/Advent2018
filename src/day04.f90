@@ -137,11 +137,11 @@ contains
   end subroutine
 
   pure subroutine BestMinuteForGuard(nights, guard_id, bestminute, incidence)
-    type(Night), intent(in)  :: nights(:)
-    integer,     intent(in)  :: guard_id
-    integer,     intent(out) :: bestminute
+    type(Night), intent(in)            :: nights(:)
+    integer,     intent(in)            :: guard_id
+    integer,     intent(out)           :: bestminute
     integer,     intent(out), optional :: incidence
-    integer                  :: i, minutes(0:59)
+    integer                            :: i, minutes(0:59)
 
     minutes = 0
     do i = 1, size(nights)
