@@ -17,10 +17,6 @@
 module Day04
   implicit none
 
-  type Event
-
-  end type
-
   type Night
     integer :: guard, sleep
     logical :: is_asleep(0:59)
