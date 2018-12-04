@@ -164,4 +164,23 @@ contains
     print *, "Ergebnis: ", bestguard * bestminute
   end subroutine
 
+  subroutine Problem04b()
+    ! for each guard, work out which minute he sleeps the most often on
+    type(Night), allocatable :: nights(:)
+    integer,     allocatable :: guard_ids(:), guard_bestmins(:), bestincidences(:)
+    integer                  :: i, j, bestguard, bestminute
+
+    call ParseNights(nights)
+    call UniqueGuards(nights, guard_ids)
+    allocate(guard_bestmins(size(guard_ids)))
+    allocate(bestincidences(size(guard_ids)))
+    do i = 1, size(guard_ids)
+      call BestMinuteForGuard(nights, guard_ids(i), guard_bestmins(i), bestincidences(i))
+    end do
+    j = maxloc(bestincidences,1)
+    bestguard = guard_ids(j)
+    bestminute = guard_bestmins(j)
+    print *, "Ergebnis: ", bestguard * bestminute
+  end subroutine
+
 end module

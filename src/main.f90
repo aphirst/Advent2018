@@ -51,6 +51,8 @@ program Advent2018
     case (7)
       print *, "4. Tag"
       call Problem04a()
+    case (8)
+      call Problem04b()
     case default
       exit
     end select
