@@ -27,7 +27,7 @@ module Day01
     procedure :: Destroy => NodeIntegerDestroy
   end type
 
-  contains
+contains
 
   subroutine Problem01a()
     ! read file
@@ -67,7 +67,7 @@ module Day01
     ! sum integers and keep all intermediates
     ! check each new intermediate against all old intermediates
     ! terminate at first duplicate
-    integer              :: unit, iostat, i
+    integer              :: unit, iostat
     integer              :: nextint
     integer, allocatable :: total(:)
 
@@ -86,11 +86,6 @@ module Day01
       close(unit)
     end do outer
     print "(a,i0)", "Ergebnis: ", total(ubound(total,1))
-    open(newunit=unit, file="day01_naive.log", status="new")
-    do i = 1, size(total)
-      write(unit,*) total(i)
-    end do
-    close(unit)
   end subroutine
 
   integer recursive function BinarySearch(item, list) result(bestindex)
@@ -205,12 +200,6 @@ module Day01
       print *, total
     end do outer
     print "(a,i0)", "Ergebnis: ", total
-
-    open(newunit=unit, file="day01_smart.log", status="replace")
-    do i = 1, size(totals)
-      write(unit,*) totals(i)
-    end do
-    close(unit)
   end subroutine
 
   subroutine NodeIntegerCreate(this, key)
