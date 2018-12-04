@@ -65,21 +65,23 @@ module Day01
     allocate(total(1))
     total = [0]
 
-    do
+    outer: do
       open(newunit=unit, file="day01.txt", iostat=iostat, status="old")
       if (iostat /= 0) stop "Datenfehler."
       read(unit, *, iostat=iostat) nextint
-      do while (iostat == 0)
+      inner: do while (iostat == 0)
         total = [ total, total(ubound(total,1)) + nextint ]
-        if (IsEndDuplicate(total)) then
-          print *, total(ubound(total,1))
-          return
-        end if
+        if (IsEndDuplicate(total)) exit outer
         read(unit, *, iostat=iostat) nextint
-      end do
+      end do inner
       close(unit)
-      print *, size(total)
+    end do outer
+    print "(a,i0)", "Ergebnis: ", total(ubound(total,1))
+    open(newunit=unit, file="day01_naive.log", status="new")
+    do i = 1, size(total)
+      write(unit,*) total(i)
     end do
+    close(unit)
   end subroutine
 
   subroutine Problem01b_smart()
