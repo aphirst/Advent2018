@@ -18,6 +18,7 @@ program Advent2018
   use Day01
   use Day02
   use Day03
+  use Day04
 
   implicit none
 
@@ -47,6 +48,9 @@ program Advent2018
       call Problem03a()
     case (6)
       call Problem03b()
+    case (7)
+      print *, "4. Tag"
+      call Problem04a()
     case default
       exit
     end select
