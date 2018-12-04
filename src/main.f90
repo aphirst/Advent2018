@@ -21,23 +21,40 @@ program Advent2018
 
   implicit none
 
-  integer :: day
+  integer :: i
+  real    :: t(2)
 
   print *, "Grüß Gott!"
-  print *, "Gib doch mal das Datum ein: (Tagesnummer in Dezember)"
-  read (*,*) day
-  select case (day)
-  case (1)
-    call Problem01a()
-    call Problem01b()
-  case (2)
-    call Problem02a()
-    call Problem02b()
-  case (3)
-    call Problem03a()
-  case default
-    stop "Kein gültiger Dezembertag!"
-  end select
+  print *, ""
+
+  do i = 1, 60
+    call cpu_time(t(1))
+    select case (i)
+    case (1)
+      print *, "1. Tag"
+      call Problem01a()
+    case (2)
+      !call Problem01b()
+      !call Problem01b_smart()
+      call Problem01b_smarter()
+    case (3)
+      print *, "2. Tag"
+      call Problem02a()
+    case (4)
+      call Problem02b()
+    case (5)
+      print *, "3. Tag"
+      call Problem03a()
+    case (6)
+      call Problem03b()
+    case default
+      exit
+    end select
+    call cpu_time(t(2))
+    print "(a,f8.3)", "Programmlaufzeit:", t(2)-t(1)
+    print *, ""
+  end do
+
   print *, "Frohe Weihnachten! Tschüss!"
 
 end program
