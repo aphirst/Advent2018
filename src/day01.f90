@@ -17,7 +17,6 @@
 module Day01
   implicit none
 
-  integer,  parameter :: long = selected_int_kind(18) ! (signed) integer up to 10^18
 
   contains
 
@@ -26,7 +25,7 @@ module Day01
     ! sum up integers
     ! spit out output
     integer       :: unit, iostat
-    integer(long) :: total, nextint
+    integer       :: total, nextint
 
     total = 0
     nextint = 0
@@ -42,8 +41,8 @@ module Day01
   end subroutine
 
   logical function IsEndDuplicate(array)
-    integer(long), intent(in) :: array(:)
-    integer                   :: i
+    integer, intent(in) :: array(:)
+    integer             :: i
 
     do i = lbound(array,1), ubound(array,1)-1
       if (array(ubound(array,1)) == array(i)) then
@@ -59,9 +58,9 @@ module Day01
     ! sum integers and keep all intermediates
     ! check each new intermediate against all old intermediates
     ! terminate at first duplicate
-    integer                    :: unit, iostat
-    integer(long)              :: nextint
-    integer(long), allocatable :: total(:)
+    integer              :: unit, iostat, i
+    integer              :: nextint
+    integer, allocatable :: total(:)
 
     allocate(total(1))
     total = [0]
