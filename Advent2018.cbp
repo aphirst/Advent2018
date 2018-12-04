@@ -25,9 +25,12 @@
 				<Compiler>
 					<Add option="-ffast-math" />
 					<Add option="-fexpensive-optimizations" />
-					<Add option="-O2" />
+					<Add option="-flto" />
+					<Add option="-Ofast" />
+					<Add option="-march=native" />
 				</Compiler>
 				<Linker>
+					<Add option="-flto" />
 					<Add option="-s" />
 				</Linker>
 			</Target>
@@ -45,7 +48,9 @@
 		<Unit filename="src/day03.f90">
 			<Option weight="0" />
 		</Unit>
-		<Unit filename="src/day04.f90" />
+		<Unit filename="src/day04.f90">
+			<Option weight="0" />
+		</Unit>
 		<Unit filename="src/main.f90">
 			<Option weight="1" />
 		</Unit>
