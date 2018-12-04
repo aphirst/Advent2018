@@ -84,10 +84,124 @@ module Day01
     close(unit)
   end subroutine
 
+  integer recursive function BinarySearch(item, list) result(bestindex)
+    integer, intent(in) :: item, list(:)
+    integer             :: guess
+
+    select case (size(list))
+    case (0)
+      bestindex = 1
+    case (1)
+      if (item <= list(1)) then
+        bestindex = 1
+      else
+        bestindex = 2
+      end if
+    case default
+      if (item > list(size(list))) then
+        bestindex = size(list)+1
+      else if (item < list(1)) then
+        bestindex = 1
+      end if
+      guess = size(list)/2
+      if (item == list(guess)) then
+        bestindex = guess
+      else if (item < list(guess)) then
+        bestindex = BinarySearch(item, list(:guess-1))
+      else
+        bestindex = guess + BinarySearch(item, list(guess+1:))
+      end if
+    end select
+  end function
+
+  subroutine ListInsert(item, index, list)
+    integer,              intent(in)     :: item, index
+    integer, allocatable, intent(in out) :: list(:)
+
+    select case (size(list))
+    case (0)
+      list = [ item ]
+    case default
+      if (index == 1) then
+        list = [ item, list ]
+      else if (index == size(list)+1) then
+        list = [ list, item ]
+      else
+        list = [ list(1:index-1), item, list(index:size(list)) ]
+      end if
+    end select
+  end subroutine
+
+  subroutine TestSearch()
+    integer, parameter :: list(8) = [-10, -8, -7, -3, 0, 12, 23, 24]
+    integer            :: i
+
+    do i = -11, 25
+      print *, i, BinarySearch(i, list)
+    end do
+    stop
+  end subroutine
+
+  subroutine TestInsert()
+    integer, allocatable :: list(:)
+    integer              :: item, i
+
+    allocate(list(0))
+    do
+      print *, "Neuer Eintrag:"
+      read *, item
+      i = BinarySearch(item, list)
+      if (list(i) == item) then
+        print "(*(i3))", list
+        print *, "Gefunden an der Stelle:", i
+      else
+        call ListInsert(item, i, list)
+        print "(*(i3))", list
+        print *, ""
+      end if
+    end do
+    stop
+  end subroutine
+
   subroutine Problem01b_smart()
     ! TODO: Smart version of Problem01b
     ! keep the list of intermediates sorted, use binary search/insertion
-    ! can also represent as a tree
+    integer              :: unit, iostat
+    integer              :: nextint, total, i, index
+    integer, allocatable :: diffs(:), totals(:)
+
+    total = 0
+    allocate(diffs(0))
+    allocate(totals(0))
+
+    open(newunit=unit, file="day01.txt", iostat=iostat, status="old")
+    if (iostat /= 0) stop "Datenfehler."
+    read(unit, *, iostat=iostat) nextint
+    do while (iostat == 0)
+      diffs = [ diffs, nextint ]
+      read(unit, *, iostat=iostat) nextint
+    end do
+    close(unit)
+
+    outer: do
+      do i = 1, size(diffs)
+        total = total + diffs(i)
+        index = BinarySearch(total, totals)
+        if (totals(index) == total) then
+          exit outer
+        else
+          call ListInsert(total, index, totals)
+        end if
+      end do
+      print *, total
+    end do outer
+    print "(a,i0)", "Ergebnis: ", total
+
+    open(newunit=unit, file="day01_smart.log", status="replace")
+    do i = 1, size(totals)
+      write(unit,*) totals(i)
+    end do
+    close(unit)
   end subroutine
 
 end module
