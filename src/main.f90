@@ -22,14 +22,19 @@ program Advent2018
 
   implicit none
 
-  integer :: i
-  real    :: t(2)
+  integer       :: i, c(2), cr, cm
+  real          :: rate
+  character(80) :: cwd
 
   print *, "Grüß Gott!"
   print *, ""
 
+  call system_clock(count_rate=cr)
+  call system_clock(count_max=cm)
+  rate = real(cr)
+
   do i = 1, 60
-    call cpu_time(t(1))
+    call system_clock(c(1))
     select case (i)
     case (1)
       print *, "1. Tag"
@@ -56,8 +61,8 @@ program Advent2018
     case default
       exit
     end select
-    call cpu_time(t(2))
-    print "(a,f8.3)", "Programmlaufzeit:", t(2)-t(1)
+    call system_clock(c(2))
+    print "(a,f8.3)", "Programmlaufzeit:", (c(2)-c(1))/rate
     print *, ""
   end do
 

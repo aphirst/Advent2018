@@ -39,6 +39,9 @@
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
 		</Compiler>
+		<Linker>
+			<Add option="-lrt" />
+		</Linker>
 		<Unit filename="src/day01.f90">
 			<Option weight="0" />
 		</Unit>
