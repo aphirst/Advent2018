@@ -37,7 +37,7 @@ module Day01
       read(unit, *, iostat=iostat) nextint
     end do
     close(unit)
-    print *, total
+    print "(a,i0)", "Ergebnis: ", total
   end subroutine
 
   logical function IsEndDuplicate(array)

@@ -83,7 +83,7 @@ contains
         fabric(x:x+width-1,y:y+height-1) = fabric(x:x+width-1,y:y+height-1) + 1
       end associate
     end do
-    print *, "Die Anzahl von mehrmals beanspruchten Stoffflächen lautet:", count(fabric > 1)
+    print "(a,i0)", "Ergebnis: ", count(fabric > 1)
   end subroutine
 
   integer function x2(myclaim)

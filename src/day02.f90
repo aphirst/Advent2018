@@ -66,7 +66,7 @@ contains
     end do
     close(unit)
     checksum = twice * thrice
-    print *, "Prüfsumme lautet:", checksum
+    print "(a,i0)", "Ergebnis: ", checksum
   end subroutine
 
   subroutine Problem02b()
@@ -102,8 +102,7 @@ contains
           end if
         end do
         if (size(diff) == 1) then
-          print *, string(i)(1:diff(1)-1), string(i)(diff(1)+1:26)
-          print *, string(j)(1:diff(1)-1), string(j)(diff(1)+1:26)
+          print "(3a)", "Ergebnis: ", string(i)(1:diff(1)-1), string(i)(diff(1)+1:26)
           return
         end if
       end do inner
