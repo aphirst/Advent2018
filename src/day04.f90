@@ -174,7 +174,7 @@ contains
     end do
     bestguard = guard_ids( maxloc(sleep,1) )
     call BestMinuteForGuard(nights, bestguard, bestminute)
-    print *, "Ergebnis: ", bestguard * bestminute
+    print "(a,i0)", "Ergebnis: ", bestguard * bestminute
   end subroutine
 
   subroutine Problem04b()
@@ -192,7 +192,7 @@ contains
     end do
     bestguard = guard_ids( maxloc(bestincidences,1) )
     bestminute = guard_bestmins( maxloc(bestincidences,1) )
-    print *, "Ergebnis: ", bestguard * bestminute
+    print "(a,i0)", "Ergebnis: ", bestguard * bestminute
   end subroutine
 
   subroutine Problem04a_smart()
