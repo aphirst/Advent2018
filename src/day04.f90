@@ -95,47 +95,56 @@ contains
     integerfind = 0
   end function
 
-  pure subroutine CondenseGuards(nights, guards_unique, sleep_condensed)
+  subroutine UniqueGuards(nights, guards)
     ! get the IDs of unique guards
     type(Night), intent(in)               :: nights(:)
-    integer,     intent(out), allocatable :: guards_unique(:), sleep_condensed(:)
-    integer                               :: guards_all(size(nights)), sleep_all(size(nights)), i, j
+    integer,     intent(out), allocatable :: guards(:)
+    integer                               :: i
 
-    guards_all = nights%guard
-    sleep_all = nights%sleep
-    allocate(guards_unique(0))
-    allocate(sleep_condensed(0))
-    do i = 1, size(guards_all)
-      if (any(guards_all(i) == guards_unique)) then
-        !j = findloc(guards_unique, guards_all(i))
-        j = IntegerFind(guards_unique, guards_all(i))
-        sleep_condensed(j) = sleep_condensed(j) + sleep_all(i)
+    allocate(guards(0))
+    do i = 1, size(nights)
+      if (any(nights(i)%guard == guards)) then
         cycle
       else
-        guards_unique = [ guards_unique, guards_all(i) ]
-        sleep_condensed = [ sleep_condensed, sleep_all(i) ]
+        guards = [ guards, nights(i)%guard ]
       end if
     end do
   end subroutine
 
-  subroutine CondenseNights(nights, bestguard, bestminute)
+  subroutine TotalSleep(nights, guards, sleep)
     type(Night), intent(in)  :: nights(:)
-    integer,     intent(in)  :: bestguard
+    integer,     intent(in)  :: guards(:)
+    integer,     intent(out) :: sleep(size(guards))
+    integer                  :: i, j
+
+    sleep = 0
+    do i = 1, size(nights)
+      !j = findloc(guards_unique, nights(i)%guard)
+      j = IntegerFind(guards, nights(i)%guard)
+      sleep(j) = sleep(j) + nights(i)%sleep
+    end do
+  end subroutine
+
+  subroutine BestMinuteForGuard(nights, guard_id, bestminute, incidence)
+    type(Night), intent(in)  :: nights(:)
+    integer,     intent(in)  :: guard_id
     integer,     intent(out) :: bestminute
-    integer                  :: i, j, minutes(0:59)
+    integer,     intent(out), optional :: incidence
+    integer                  :: i, minutes(0:59)
 
     minutes = 0
     do i = 1, size(nights)
-      if (nights(i)%guard == bestguard) then
-        do concurrent (j = 0:59)
-          if (nights(i)%is_asleep(j)) minutes(j) = minutes(j) + 1
-        end do
+      if (nights(i)%guard == guard_id) then
+        where (nights(i)%is_asleep)
+          minutes = minutes + 1
+        end where
       else
         cycle
       end if
     end do
     ! maxloc doesn't seem to honour the (0:59) array bounds
     bestminute = maxloc(minutes,1)-1
+    if(present(incidence)) incidence = minutes(bestminute)
   end subroutine
 
   subroutine Problem04a()
@@ -143,14 +152,16 @@ contains
     ! the only relevant time period on each day is 00:00 to 01:00, 60 minutes
     ! list of all days, the guard ID for each, and whether asleep or awake for each minute
     type(Night), allocatable :: nights(:)
-    integer,     allocatable :: guards(:), sleep(:)
+    integer,     allocatable :: guard_ids(:), sleep(:)
     integer                  :: bestguard, bestminute
 
     call ParseNights(nights)
-    call CondenseGuards(nights, guards, sleep)
-    bestguard = guards( maxloc(sleep,1) )
-    call CondenseNights(nights, bestguard, bestminute)
-    print *, "Ergebnis: ", bestguard*bestminute
+    call UniqueGuards(nights, guard_ids)
+    allocate(sleep(size(guard_ids)))
+    call TotalSleep(nights, guard_ids, sleep)
+    bestguard = guard_ids( maxloc(sleep,1) )
+    call BestMinuteForGuard(nights, bestguard, bestminute)
+    print *, "Ergebnis: ", bestguard * bestminute
   end subroutine
 
 end module
