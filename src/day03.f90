@@ -137,6 +137,5 @@ contains
       end do inner
     end do outer
     print "(a,i0)", "Ergebnis: ", pack([(i, i = 1, size(claims))], .not. disqualified)
-
   end subroutine
 end module
