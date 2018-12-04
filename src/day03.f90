@@ -121,16 +121,22 @@ contains
     ! perform bounding-box tests
     type(Claim), allocatable :: claims(:)
     integer                  :: i, j
+    logical, allocatable :: disqualified(:)
 
     call ReadClaims(claims)
+    allocate(disqualified(size(claims)))
+    disqualified = [( .false., i = 1, size(claims) )]
 
     outer: do i = 1, size(claims)
+      if (disqualified(i)) cycle outer
       inner: do j = 1, size(claims)
         if (i == j) cycle inner
-        if (claims(i)%IsOverlap(claims(j))) cycle outer
+        if (claims(i)%IsOverlap(claims(j))) then
+          disqualified([i,j]) = .true.
+        end if
       end do inner
-      print *, "Der Auftrag, der keinen anderen überlappt, ist:", i
     end do outer
+    print "(a,i0)", "Ergebnis: ", pack([(i, i = 1, size(claims))], .not. disqualified)
 
   end subroutine
 end module
