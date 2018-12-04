@@ -49,7 +49,7 @@ module Day01
     print "(a,i0)", "Ergebnis: ", total
   end subroutine
 
-  logical function IsEndDuplicate(array)
+  logical pure function IsEndDuplicate(array)
     integer, intent(in) :: array(:)
     integer             :: i
 

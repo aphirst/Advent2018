@@ -26,7 +26,7 @@ module Day03
 
 contains
 
-  function ParseClaim(string)
+  pure function ParseClaim(string)
     ! each line is defined like `#62 @ 272,752: 28x14`
     ! index, (x,y), (width, height)
     ! there are 4 significant breaks, "@", "," ":" and "x""
@@ -86,19 +86,19 @@ contains
     print "(a,i0)", "Ergebnis: ", count(fabric > 1)
   end subroutine
 
-  integer function x2(myclaim)
+  integer pure function x2(myclaim)
     class(Claim), intent(in) :: myclaim
 
     x2 = myclaim%x + myclaim%width
   end function
 
-  integer function y2(myclaim)
+  integer pure function y2(myclaim)
     class(Claim), intent(in) :: myclaim
 
     y2 = myclaim%y + myclaim%height
   end function
 
-  logical function IsOverlap(claim1, claim2)
+  logical pure function IsOverlap(claim1, claim2)
     ! compare claims to see whether their regions overlap
     class(Claim), intent(in) :: claim1, claim2
 
@@ -121,7 +121,7 @@ contains
     ! perform bounding-box tests
     type(Claim), allocatable :: claims(:)
     integer                  :: i, j
-    logical, allocatable :: disqualified(:)
+    logical,     allocatable :: disqualified(:)
 
     call ReadClaims(claims)
     allocate(disqualified(size(claims)))

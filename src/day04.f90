@@ -95,7 +95,7 @@ contains
     integerfind = 0
   end function
 
-  subroutine UniqueGuards(nights, guards)
+  pure subroutine UniqueGuards(nights, guards)
     ! get the IDs of unique guards
     type(Night), intent(in)               :: nights(:)
     integer,     intent(out), allocatable :: guards(:)
@@ -111,7 +111,7 @@ contains
     end do
   end subroutine
 
-  subroutine TotalSleep(nights, guards, sleep)
+  pure subroutine TotalSleep(nights, guards, sleep)
     type(Night), intent(in)  :: nights(:)
     integer,     intent(in)  :: guards(:)
     integer,     intent(out) :: sleep(size(guards))
@@ -125,7 +125,7 @@ contains
     end do
   end subroutine
 
-  subroutine BestMinuteForGuard(nights, guard_id, bestminute, incidence)
+  pure subroutine BestMinuteForGuard(nights, guard_id, bestminute, incidence)
     type(Night), intent(in)  :: nights(:)
     integer,     intent(in)  :: guard_id
     integer,     intent(out) :: bestminute
