@@ -41,7 +41,7 @@ contains
     total = 0
     nextint = 0
 
-    open(newunit=unit, file="day01.txt", iostat=iostat, status="old")
+    open(newunit=unit, file="input/day01.txt", iostat=iostat, status="old")
     if (iostat /= 0) stop "Datenfehler."
     do while (iostat == 0)
       total = total + nextint
@@ -120,7 +120,7 @@ contains
     allocate(diffs(0))
     is_duplicate = .false.
 
-    open(newunit=unit, file="day01.txt", iostat=iostat, status="old")
+    open(newunit=unit, file="input/day01.txt", iostat=iostat, status="old")
     if (iostat /= 0) stop "Datenfehler."
     read(unit, *, iostat=iostat) nextint
     do while (iostat == 0)

@@ -44,17 +44,17 @@ contains
     character(2)               :: minute_str
     character(4)               :: guard_str
 
-    call execute_command_line("rm day04_nights.txt")
-    call execute_command_line("fgrep -o '#' day04.txt | wc -l > day04_nights.txt")
-    open(newunit=unit, file="day04_nights.txt", iostat=iostat, status="old")
+    call execute_command_line("rm input/day04_nights.txt")
+    call execute_command_line("fgrep -o '#' input/day04.txt | wc -l > input/day04_nights.txt")
+    open(newunit=unit, file="input/day04_nights.txt", iostat=iostat, status="old")
     if (iostat /= 0) stop "Datenfehler."
     read(unit,*) N
     close(unit)
     allocate(nights(N))
 
-    call execute_command_line("rm day04_sorted.txt")
-    call execute_command_line("cat day04.txt | sort > day04_sorted.txt")
-    open(newunit=unit, file="day04_sorted.txt", iostat=iostat, status="old")
+    call execute_command_line("rm input/day04_sorted.txt")
+    call execute_command_line("cat input/day04.txt | sort > input/day04_sorted.txt")
+    open(newunit=unit, file="input/day04_sorted.txt", iostat=iostat, status="old")
     read(unit, "(a)") string
     outer: do i = 1, N
       ! determine the guard number

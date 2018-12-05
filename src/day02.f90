@@ -60,7 +60,7 @@ contains
     twice = 0
     thrice = 0
 
-    open(newunit=unit, file="day02.txt", iostat=iostat, status="old")
+    open(newunit=unit, file="input/day02.txt", iostat=iostat, status="old")
     if (iostat /= 0) stop "Datenfehler."
     read(unit, *, iostat=iostat) string
     do while (iostat == 0)
@@ -84,7 +84,7 @@ contains
 
     allocate(string(0))
 
-    open(newunit=unit, file="day02.txt", iostat=iostat, status="old")
+    open(newunit=unit, file="input/day02.txt", iostat=iostat, status="old")
     if (iostat /= 0) stop "Datenfehler."
     read(unit, *, iostat=iostat) stringtemp
     do while (iostat == 0)

@@ -46,7 +46,7 @@ contains
     total = [0]
 
     outer: do
-      open(newunit=unit, file="day01.txt", iostat=iostat, status="old")
+      open(newunit=unit, file="input/day01.txt", iostat=iostat, status="old")
       if (iostat /= 0) stop "Datenfehler."
       read(unit, *, iostat=iostat) nextint
       inner: do while (iostat == 0)
@@ -149,7 +149,7 @@ contains
     allocate(diffs(0))
     allocate(totals(0))
 
-    open(newunit=unit, file="day01.txt", iostat=iostat, status="old")
+    open(newunit=unit, file="input/day01.txt", iostat=iostat, status="old")
     if (iostat /= 0) stop "Datenfehler."
     read(unit, *, iostat=iostat) nextint
     do while (iostat == 0)
