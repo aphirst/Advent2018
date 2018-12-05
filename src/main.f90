@@ -62,7 +62,10 @@ program Advent2018
     case (9)
       print *, "5. Tag"
       call Problem05a()
+      !call Problem05a_bad()
+    case (10)
       call Problem05b()
+      !call Problem05b_bad()
     case default
       exit
     end select
