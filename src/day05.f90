@@ -61,7 +61,7 @@ contains
     else
       ! case 1: Aa
       if ( pair(1) < iachar("a")) then
-        sldc = (pair(1) == pair(2) - ascii_offset)
+        sldc = (pair(2) == pair(1) + ascii_offset)
       ! case 2: aA
       else if (pair(1) > iachar("Z")) then
         sldc = (pair(1) == pair(2) + ascii_offset)
@@ -119,6 +119,7 @@ contains
     integer              :: i, sizes(0:25)
 
     call ReadPolymer(polymer)
+    polymer = FullCollapse(polymer)
     do i = 0, 25
       polymer_trim = RemoveLetters(polymer, [iachar("A")+i, iachar("a")+i])
       collapsed = FullCollapse(polymer_trim)
