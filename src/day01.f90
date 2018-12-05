@@ -27,6 +27,13 @@ module Day01
     procedure :: Destroy => NodeIntegerDestroy
   end type
 
+  ! number of buckets, performance caps out around here
+  integer, parameter :: N = 65536
+
+  type Bucket
+    type(NodeInteger), allocatable :: mytree
+  end type
+
   public
 
 contains
@@ -109,11 +116,11 @@ contains
   end subroutine
 
   subroutine Problem01b()
-    ! use a binary search tree
+    ! use a hash table of binary search trees
     integer                        :: unit, iostat
-    integer                        :: nextint, total, i
+    integer                        :: nextint, total, i, hash
     integer,           allocatable :: diffs(:)
-    type(NodeInteger), allocatable :: mytree
+    type(Bucket)                   :: mybuckets(N)
     logical                        :: is_duplicate
 
     total = 0
@@ -132,11 +139,12 @@ contains
     outer: do
       inner: do i = 1, size(diffs)
         total = total + diffs(i)
-        if (.not. allocated(mytree)) then
-          allocate(mytree)
-          call mytree%Create(total)
+        hash = modulo(total, N) + 1
+        if (.not. allocated(mybuckets(hash)%mytree)) then
+          allocate(mybuckets(hash)%mytree)
+          call mybuckets(hash)%mytree%Create(total)
         else
-          call mytree%InsertUnique(total, is_duplicate)
+          call mybuckets(hash)%mytree%InsertUnique(total, is_duplicate)
           if (is_duplicate) exit outer
         end if
       end do inner
