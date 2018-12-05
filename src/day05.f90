@@ -17,17 +17,23 @@
 module Day05
   implicit none
 
-  character(26), parameter :: large = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  character(26), parameter :: small = 'abcdefghijklmnopqrstuvwxyz'
-
   private
   public :: Problem05a, Problem05b
 
 contains
 
+  pure function StringToASCII(mystring) result(myints)
+    character(*), intent(in) :: mystring
+    integer                  :: myints(len(mystring))
+    integer                  :: i
+
+    myints = [( iachar(mystring(i:i)), i = 1, len(mystring) )]
+  end function
+
   subroutine ReadPolymer(polymer)
-    integer                   :: unit, iostat, N
-    character(:), allocatable :: polymer
+    integer,      allocatable, intent(out) :: polymer(:)
+    integer                                :: unit, iostat, N
+    character(:), allocatable              :: polymer_str
 
     call execute_command_line("rm day05_length.txt")
     call execute_command_line("expr `wc -m < day05.txt` - `wc -l < day05.txt` > day05_length.txt")
@@ -35,154 +41,90 @@ contains
     if (iostat /= 0) stop "Datenfehler."
     read(unit,*) N
     close(unit)
-    allocate(character(len=N) :: polymer)
+    allocate(character(len=N) :: polymer_str)
 
     open(newunit=unit, file="day05.txt", iostat=iostat, status="old")
     if (iostat /= 0) stop "Datenfehler."
-    read(unit,"(a)") polymer
+    read(unit,"(a)") polymer_str
     close(unit)
 
+    polymer = StringToASCII(polymer_str)
   end subroutine
 
-  pure subroutine Alchemy(pair, is_blanked)
+  logical function SameLetterDifferentCase(pair) result(sldc)
+    ! assumes all input either A-Z, a-z or (space)
+    integer, intent(in)            :: pair(2)
+    integer,             parameter :: ascii_offset = iachar("a") - iachar("A")
 
-    character(2), intent(in out) :: pair
-    logical,      intent(out)    :: is_blanked
-    integer                      :: i_large(2), i_small(2)
-
-    i_large(1) = index(large, pair(1:1))
-    i_large(2) = index(large, pair(2:2))
-    i_small(1) = index(small, pair(1:1))
-    i_small(2) = index(small, pair(2:2))
-    if ( ((i_large(1) == i_small(2)) .and. (i_large(1) /= 0)) .or. ((i_large(2) == i_small(1)) .and. (i_large(2) /= 0)) ) then
-      pair = "  "
-      is_blanked = .true.
+    if ( any(pair == iachar(" ")) ) then
+      sldc = .false.
     else
-      is_blanked = .false.
+      ! case 1: Aa
+      if ( pair(1) < iachar("a")) then
+        sldc = (pair(1) == pair(2) - ascii_offset)
+      ! case 2: aA
+      else if (pair(1) > iachar("Z")) then
+        sldc = (pair(1) == pair(2) + ascii_offset)
+      else
+        sldc = .false.
+      end if
     end if
-  end subroutine
-
-  pure recursive function Collapse(polymer) result(collapsed)
-    ! collapse all regions with spaces
-    character(*), intent(in)              :: polymer
-    character(:),             allocatable :: collapsed
-    integer                               :: i
-
-    i = index(polymer, ' ')
-    if (i == 0) then
-      collapsed = polymer
-    else
-      collapsed = polymer(1:i-1) // Collapse(polymer(i+1:))
-    end if
-  end function
-
-  pure function StringToArray(mystring) result(myarray)
-    character(*), intent(in) :: mystring
-    character(1)             :: myarray(len(mystring))
-    integer                  :: i
-
-    do i = 1, len(mystring)
-      myarray(i) = mystring(i:i)
-    end do
-  end function
-
-  pure function ArrayToString(myarray) result(mystring)
-    character(1),             intent(in) :: myarray(:)
-    character(size(myarray))             :: mystring
-    integer                              :: i
-
-    do i = 1, size(myarray)
-      mystring(i:i) = myarray(i)
-    end do
-  end function
-
-  pure function Collapse_smart(polymer) result(collapsed)
-    character(*), intent(in)              :: polymer
-    character(:),             allocatable :: collapsed
-    character(1),             allocatable :: polymer_array(:), collapsed_array(:)
-
-    polymer_array = StringToArray(polymer)
-    collapsed_array = pack(polymer_array, polymer_array /= " ")
-    collapsed = ArrayToString(collapsed_array)
   end function
 
   function FullCollapse(polymer_in) result(collapsed)
-    character(*), intent(in)              :: polymer_in
-    character(:),             allocatable :: polymer, collapsed
-    logical                               :: is_blanked
-    integer                               :: i
+    integer, intent(in)              :: polymer_in(:)
+    integer,             allocatable :: polymer(:), collapsed(:)
+    integer                          :: i
 
     polymer = polymer_in
     do
-      is_blanked = .false.
-      do i = 1, len(polymer)-1
-        if (is_blanked) then
-          is_blanked = .false.
+      ! convert dupes to junk
+      do i = 1, size(polymer)-1
+        if ( polymer(i) == iachar(" ") ) then
           cycle
-        else
-          call Alchemy(polymer(i:i+1), is_blanked)
-          if (is_blanked) cycle
+        else if ( SameLetterDifferentCase(polymer(i:i+1)) ) then
+          polymer(i:i+1) = iachar(" ")
         end if
       end do
-      collapsed = Collapse(polymer)
-      !collapsed = Collapse_smart(polymer)
-      if (len(polymer) == len(collapsed)) then
-        return
-      else
-        call move_alloc(collapsed, polymer)
-      end if
+      ! collapse using a mask around the junk
+      collapsed = pack(polymer, polymer /= iachar(" "))
+      if (size(collapsed) == size(polymer)) return
+      call move_alloc(collapsed, polymer)
     end do
   end function
 
   subroutine Problem05a()
-    ! read string in
-    ! conditions to delete: aA, Aa
-    character(:), allocatable :: polymer, collapsed
+    integer, allocatable :: polymer(:), collapsed(:)
 
     call ReadPolymer(polymer)
     collapsed = FullCollapse(polymer)
-    print "(a,i0)", "Ergebnis: ", len(collapsed)
+    print "(a,i0)", "Ergebnis: ", size(collapsed)
   end subroutine
 
-  pure function RemoveLetter(polymer_in, i)
-    character(*), intent(in)              :: polymer_in
-    integer,      intent(in)              :: i
-    character(:),             allocatable :: polymer, removeletter
-    integer                               :: j
+  function RemoveLetters(polymer, ascii)
+    ! remove all instances of the specified ascii codes from the integer input
+    integer, intent(in)              :: polymer(:), ascii(:)
+    integer,             allocatable :: removeletters(:)
+    logical                          :: mymask(size(polymer))
+    integer                          :: i
 
-    polymer = polymer_in
-    do concurrent (j = 1:len(polymer))
-      if ( (polymer(j:j) == large(i:i)) .or. (polymer(j:j) == small(i:i)) ) then
-        polymer(j:j) = " "
-      end if
+    do i = 1, size(polymer)
+      mymask(i) = all(polymer(i) /= ascii)
     end do
-    removeletter = Collapse(polymer)
-    !removeletter = Collapse_smart(polymer)
-  end function
-
-  function RemoveLetter_smart(polymer_in, i) result(removeletter)
-    character(*), intent(in)              :: polymer_in
-    integer,      intent(in)              :: i
-    character(:),             allocatable :: removeletter
-    character(1),             allocatable :: polymer(:), removeletter_array(:)
-
-    polymer = StringToArray(polymer_in)
-    removeletter_array = pack(polymer, ( (polymer/=large(i:i)) .and. (polymer /= small(i:i)) ))
-    removeletter = ArrayToString(removeletter_array)
+    removeletters = pack(polymer, mymask)
   end function
 
   subroutine Problem05b()
-    character(:), allocatable :: polymer, polymer_trim, collapsed
-    integer :: i, length(26)
+    integer, allocatable :: polymer(:), polymer_trim(:), collapsed(:)
+    integer              :: i, sizes(0:25)
 
     call ReadPolymer(polymer)
-    do i = 1, 26
-      print "(a,i0,a)", "i: ", i, "/26"
-      polymer_trim = RemoveLetter(polymer, i)
-      !polymer_trim = RemoveLetter_smart(polymer, i)
+    do i = 0, 25
+      polymer_trim = RemoveLetters(polymer, [iachar("A")+i, iachar("a")+i])
       collapsed = FullCollapse(polymer_trim)
-      length(i) = len(collapsed)
+      sizes(i) = size(collapsed)
     end do
-    print "(a,i0)", "Ergebnis: ", minval(length)
+    print "(a,i0)", "Ergebnis: ", minval(sizes)
   end subroutine
+
 end module
