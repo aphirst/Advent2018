@@ -1,5 +1,5 @@
 # Advent2018
-My attempts at at the [Advent of Code 2018](https://adventofcode.com/2018).
+My attempts at the [Advent of Code 2018](https://adventofcode.com/2018).
 
 ## Benchmarking
 
