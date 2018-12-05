@@ -56,19 +56,7 @@ contains
     integer, intent(in)            :: pair(2)
     integer,             parameter :: ascii_offset = iachar("a") - iachar("A")
 
-    if ( any(pair == iachar(" ")) ) then
-      sldc = .false.
-    else
-      ! case 1: Aa
-      if ( pair(1) < iachar("a")) then
-        sldc = (pair(2) == pair(1) + ascii_offset)
-      ! case 2: aA
-      else if (pair(1) > iachar("Z")) then
-        sldc = (pair(1) == pair(2) + ascii_offset)
-      else
-        sldc = .false.
-      end if
-    end if
+    sldc = (abs(pair(1)-pair(2)) == ascii_offset)
   end function
 
   function FullCollapse(polymer_in) result(collapsed)
