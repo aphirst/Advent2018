@@ -32,6 +32,9 @@ module Day04
     type(Hour), allocatable :: hourdata(:)
   end type
 
+  private
+  public :: Problem04a, Problem04a_smart, Problem04b, Problem04b_smart
+
 contains
 
   subroutine ParseNights(nights)

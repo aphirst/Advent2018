@@ -24,6 +24,9 @@ module Day03
     procedure :: IsOverlap
   end type
 
+  private
+  public :: Problem03a, Problem03b
+
 contains
 
   pure function ParseClaim(string)

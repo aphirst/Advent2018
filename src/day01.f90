@@ -27,14 +27,16 @@ module Day01
     procedure :: Destroy => NodeIntegerDestroy
   end type
 
+  public
+
 contains
 
   subroutine Problem01a()
     ! read file
     ! sum up integers
     ! spit out output
-    integer       :: unit, iostat
-    integer       :: total, nextint
+    integer :: unit, iostat
+    integer :: total, nextint
 
     total = 0
     nextint = 0

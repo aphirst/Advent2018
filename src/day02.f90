@@ -17,6 +17,9 @@
 module Day02
   implicit none
 
+  private
+  public :: Problem02a, Problem02b
+
 contains
 
   function CountInstances(string)
