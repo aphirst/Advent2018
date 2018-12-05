@@ -1,7 +1,7 @@
 # depslib dependency file v1.0
 1544015142 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day01.f90
 
-1544021489 source:/home/adam/Projects/Personal/Programming/Advent2018/src/main.f90
+1544022949 source:/home/adam/Projects/Personal/Programming/Advent2018/src/main.f90
 
 1543999387 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day02.f90
 
@@ -9,7 +9,9 @@
 
 1543999835 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day04.f90
 
-1544022055 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day05.f90
+1544024165 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day05.f90
 
-1544015410 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day01_slow.f90
+1544022010 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day05_slow.f90
+
+1544022333 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day01_slow.f90
 
