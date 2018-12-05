@@ -41,9 +41,9 @@ program Advent2018
       print *, "1. Tag"
       call Problem01a()
     case (2)
-      !call Problem01b()
-      !call Problem01b_smart()
-      call Problem01b_smarter()
+      call Problem01b()
+      !call Problem01b_bad()
+      !call Problem01b_better()
     case (3)
       print *, "2. Tag"
       call Problem02a()
