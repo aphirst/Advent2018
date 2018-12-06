@@ -107,6 +107,27 @@ contains
     end do
   end function
 
+  function Clone(mystack)
+    type(Stack), intent(in) :: mystack
+    type(Stack)             :: clone
+    integer                 :: keys(mystack%num_nodes), i
+
+    keys = Traverse(mystack)
+    clone = NewStack()
+    do i = 1, size(keys)
+      call Push(clone, keys(i))
+    end do
+  end function
+
+  subroutine Clear(mystack)
+    type(Stack), intent(in out) :: mystack
+    integer                     :: i
+
+    do while (mystack%num_nodes > 0)
+      call Pop(mystack, i)
+    end do
+  end subroutine
+
   subroutine ReadPolymer(polymer)
     type(Stack),               intent(out) :: polymer
     integer                                :: unit, iostat, N, i
@@ -139,15 +160,15 @@ contains
     sldc = (abs(pair(1)-pair(2)) == ascii_offset)
   end function
 
-  function FullCollapse(polymer) result(collapsed)
+  function FullCollapse(polymer) result(right)
     ! parse the string starting with everything in the left stack
     ! process things into the right stack and compare-as-we-go
     ! once the left stack is empty, we must have a fully-collapsed stack on the right
     type(Stack), intent(in) :: polymer
-    type(Stack)             :: left, right, collapsed
+    type(Stack)             :: left, right
     integer                 :: i, j
 
-    left = polymer
+    left = Clone(polymer)
     right = NewStack()
 
     do
@@ -168,15 +189,19 @@ contains
         end if
       end if
     end do
-    collapsed = right
+
+    call Clear(left)
   end function
 
   subroutine Problem05a()
-    type(Stack)          :: polymer, collapsed
+    type(Stack) :: polymer, collapsed
 
     call ReadPolymer(polymer)
     collapsed = FullCollapse(polymer)
     print "(a,i0)", "Ergebnis: ", collapsed%num_nodes
+
+    call Clear(polymer)
+    call Clear(collapsed)
   end subroutine
 
   function RemoveLetters(polymer, ascii)
@@ -201,18 +226,25 @@ contains
   end function
 
   subroutine Problem05b()
-    type(Stack)          :: polymer, collapsed, collapsed_new, polymer_trim
-    integer              :: i, sizes(25)
+    type(Stack)          :: polymer, collapsed, collapsed_new(0:25), polymer_trim(0:25)
+    integer              :: i, sizes(0:25)
 
     call ReadPolymer(polymer)
     collapsed = FullCollapse(polymer)
 
     do i = 0, 25
-      polymer_trim = RemoveLetters(collapsed, [iachar("A")+i, iachar("a")+i])
-      collapsed_new = FullCollapse(polymer_trim)
-      sizes(i) = collapsed_new%num_nodes
+      polymer_trim(i) = RemoveLetters(collapsed, [iachar("A")+i, iachar("a")+i])
+      collapsed_new(i) = FullCollapse(polymer_trim(i))
+      sizes(i) = collapsed_new(i)%num_nodes
     end do
     print "(a,i0)", "Ergebnis: ", minval(sizes)
+
+    call Clear(polymer)
+    call Clear(collapsed)
+    do i = 0, 25
+      call Clear(polymer_trim(i))
+      call Clear(collapsed_new(i))
+    end do
   end subroutine
 
 end module
