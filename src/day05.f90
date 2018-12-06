@@ -17,22 +17,99 @@
 module Day05
   implicit none
 
+  type Node
+    type(Node), pointer :: next => NULL()
+    integer             :: key
+  end type
+
+  type Stack
+    type(Node), pointer :: head => NULL()
+    integer             :: num_nodes
+  contains
+    procedure :: IsEmpty
+  end type
+
   private
   public :: Problem05a, Problem05b
 
 contains
 
-  pure function StringToASCII(mystring) result(myints)
-    character(*), intent(in) :: mystring
-    integer                  :: myints(len(mystring))
-    integer                  :: i
+  logical pure function IsEmpty(mystack)
+    class(Stack), intent(in) :: mystack
 
-    myints = [( iachar(mystring(i:i)), i = 1, len(mystring) )]
+    isempty = (mystack%num_nodes == 0)
+  end function
+
+  type(Stack) function NewStack()
+    newstack = Stack(NULL(), 0)
+  end function
+
+  subroutine Init(mystack, key)
+    ! make sure to only call when stack is not initialised
+    type(Stack), intent(in out) :: mystack
+    integer,     intent(in)     :: key
+
+    allocate(mystack%head)
+    mystack%head%key = key
+    mystack%head%next => NULL()
+    mystack%num_nodes = 1
+  end subroutine
+
+  subroutine Push(mystack, key)
+    type(Stack), intent(in out) :: mystack
+    integer,     intent(in)     :: key
+    type(Node),  pointer        :: mynode
+
+    ! if stack empty
+    if (mystack%IsEmpty()) then
+      call Init(mystack, key)
+    else
+      mynode => mystack%head
+      allocate(mystack%head)
+      mystack%head%key = key
+      mystack%head%next => mynode
+      mystack%num_nodes = mystack%num_nodes + 1
+    end if
+  end subroutine
+
+  subroutine Pop(mystack, key)
+    ! make sure to only call when stack is initialised
+    type(Stack), intent(in out)           :: mystack
+    integer,     intent(out)              :: key
+    type(Node),                  pointer  :: mynode
+
+    if (mystack%IsEmpty()) then
+      error stop "Stapel ist bereits leer. Logikfehler."
+    end if
+    key = mystack%head%key
+    mynode => mystack%head%next
+    deallocate(mystack%head)
+    mystack%head => mynode
+    ! end state, mystack%head points to what used to be mystack%head%next
+    mystack%num_nodes = mystack%num_nodes - 1
+  end subroutine
+
+  integer pure function Peek(mystack)
+    type(Stack), intent(in) :: mystack
+
+    peek = mystack%head%key
+  end function
+
+  function Traverse(mystack)
+    type(Stack), intent(in)          :: mystack
+    integer                          :: i, traverse(mystack%num_nodes)
+    type(Node),              pointer :: mynode
+
+    mynode => mystack%head
+    do i = 1, mystack%num_nodes
+      traverse(i) = mynode%key
+      mynode => mynode%next
+    end do
   end function
 
   subroutine ReadPolymer(polymer)
-    integer,      allocatable, intent(out) :: polymer(:)
-    integer                                :: unit, iostat, N
+    type(Stack),               intent(out) :: polymer
+    integer                                :: unit, iostat, N, i
     character(:), allocatable              :: polymer_str
 
     call execute_command_line("rm input/day05_length.txt")
@@ -48,10 +125,13 @@ contains
     read(unit,"(a)") polymer_str
     close(unit)
 
-    polymer = StringToASCII(polymer_str)
+    polymer = NewStack()
+    do i = 1, len(polymer_str)
+     call Push(polymer, iachar(polymer_str(i:i)))
+    end do
   end subroutine
 
-  logical function SameLetterDifferentCase(pair) result(sldc)
+  logical pure function SameLetterDifferentCase(pair) result(sldc)
     ! assumes all input either A-Z, a-z or (space)
     integer, intent(in)            :: pair(2)
     integer,             parameter :: ascii_offset = iachar("a") - iachar("A")
@@ -59,59 +139,78 @@ contains
     sldc = (abs(pair(1)-pair(2)) == ascii_offset)
   end function
 
-  function FullCollapse(polymer_in) result(collapsed)
-    integer, intent(in)              :: polymer_in(:)
-    integer,             allocatable :: polymer(:), collapsed(:)
-    integer                          :: i
+  function FullCollapse(polymer) result(collapsed)
+    ! parse the string starting with everything in the left stack
+    ! process things into the right stack and compare-as-we-go
+    ! once the left stack is empty, we must have a fully-collapsed stack on the right
+    type(Stack), intent(in) :: polymer
+    type(Stack)             :: left, right, collapsed
+    integer                 :: i, j
 
-    polymer = polymer_in
+    left = polymer
+    right = NewStack()
+
     do
-      ! convert dupes to junk
-      do i = 1, size(polymer)-1
-        if ( polymer(i) == iachar(" ") ) then
-          cycle
-        else if ( SameLetterDifferentCase(polymer(i:i+1)) ) then
-          polymer(i:i+1) = iachar(" ")
+      if (left%IsEmpty()) then
+        exit
+      else if (right%IsEmpty()) then
+        call Pop(left, i)
+        call Push(right, i)
+      else
+        i = Peek(left)
+        j = Peek(right)
+        if (SameLetterDifferentCase([i,j])) then
+          call Pop(left, i)
+          call Pop(right, j)
+        else
+          call Pop(left, i)
+          call Push(right, i)
         end if
-      end do
-      ! collapse using a mask around the junk
-      collapsed = pack(polymer, polymer /= iachar(" "))
-      if (size(collapsed) == size(polymer)) return
-      call move_alloc(collapsed, polymer)
+      end if
     end do
+    collapsed = right
   end function
 
   subroutine Problem05a()
-    integer, allocatable :: polymer(:), collapsed(:)
+    type(Stack)          :: polymer, collapsed
 
     call ReadPolymer(polymer)
     collapsed = FullCollapse(polymer)
-    print "(a,i0)", "Ergebnis: ", size(collapsed)
+    print "(a,i0)", "Ergebnis: ", collapsed%num_nodes
   end subroutine
 
   function RemoveLetters(polymer, ascii)
     ! remove all instances of the specified ascii codes from the integer input
-    integer, intent(in)              :: polymer(:), ascii(:)
-    integer,             allocatable :: removeletters(:)
-    logical                          :: mymask(size(polymer))
-    integer                          :: i
+    type(Stack), intent(in) :: polymer
+    integer,     intent(in) :: ascii(:)
+    type(Stack)             :: removeletters
+    integer                 :: polymer_int(polymer%num_nodes), i
+    logical                 :: mymask(polymer%num_nodes)
+    integer,    allocatable :: polymer_new(:)
 
-    do i = 1, size(polymer)
-      mymask(i) = all(polymer(i) /= ascii)
+    polymer_int = Traverse(polymer)
+    do concurrent (i = 1:size(polymer_int))
+      mymask(i) = all(polymer_int(i) /= ascii)
     end do
-    removeletters = pack(polymer, mymask)
+    polymer_new = pack(polymer_int, mymask)
+
+    removeletters = NewStack()
+    do i = 1, size(polymer_new)
+      call Push(removeletters, polymer_new(i))
+    end do
   end function
 
   subroutine Problem05b()
-    integer, allocatable :: polymer(:), polymer_trim(:), collapsed(:)
-    integer              :: i, sizes(0:25)
+    type(Stack)          :: polymer, collapsed, collapsed_new, polymer_trim
+    integer              :: i, sizes(25)
 
     call ReadPolymer(polymer)
-    polymer = FullCollapse(polymer)
+    collapsed = FullCollapse(polymer)
+
     do i = 0, 25
-      polymer_trim = RemoveLetters(polymer, [iachar("A")+i, iachar("a")+i])
-      collapsed = FullCollapse(polymer_trim)
-      sizes(i) = size(collapsed)
+      polymer_trim = RemoveLetters(collapsed, [iachar("A")+i, iachar("a")+i])
+      collapsed_new = FullCollapse(polymer_trim)
+      sizes(i) = collapsed_new%num_nodes
     end do
     print "(a,i0)", "Ergebnis: ", minval(sizes)
   end subroutine
