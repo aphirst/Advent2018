@@ -77,8 +77,8 @@ contains
     ymin = minval(mycoords%y,1)
     ymax = maxval(mycoords%y,1)
 
-    allocate(tally( size(mycoords)+1 ))
-    tally = [( 0, i = 1, size(mycoords)+1 )]
+    allocate(tally( size(mycoords) ))
+    tally = [( 0, i = 1, size(mycoords) )]
     is_still_qualified = [( .true., i = 1, size(mycoords) )]
     ! process all points in the virtual grid
     do x = xmin, xmax
