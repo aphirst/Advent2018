@@ -112,7 +112,7 @@ contains
       end do inner
     end do outer
 
-    print "(3a)", "Ergebnis: ", string_common
+    print "(3a)", "Ergebnis 2: ", string_common
     call system_clock(c(2))
   end subroutine
 
