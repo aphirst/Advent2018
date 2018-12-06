@@ -21,6 +21,9 @@ module Day06
     integer :: x, y
   end type
 
+  private
+  public :: Problem06a, Problem06b
+
 contains
 
   subroutine ReadCoords(mycoords)
@@ -36,6 +39,7 @@ contains
     allocate(mycoords(N))
 
     open(newunit=unit, file="input/day06.txt", iostat=iostat, status="old")
+    if (iostat /= 0) stop "Datenfehler."
     do i = 1, N
       read(unit,*) mycoords(i)
     end do
@@ -100,4 +104,28 @@ contains
 
     print "(a,i0)", "Ergebnis: ", maxval(tally(1:),1,is_still_qualified)
   end subroutine
+
+  subroutine Problem06b()
+    ! use a real grid for best distances this time
+    type(Coord), allocatable            :: mycoords(:)
+    integer                             :: i, xmin, xmax, ymin, ymax, x, y, tally
+    integer,                  parameter :: N = 10000
+
+    call ReadCoords(mycoords)
+
+    xmin = minval(mycoords%x,1)
+    xmax = maxval(mycoords%x,1)
+    ymin = minval(mycoords%y,1)
+    ymax = maxval(mycoords%y,1)
+
+    tally = 0
+    do x = xmin, xmax
+      do y = ymin, ymax
+        i = sum(ManhattanDist(mycoords(:)%x, mycoords(:)%y, x, y))
+        if (i < N) tally = tally + 1
+      end do
+    end do
+    print "(a,i0)", "Ergebnis: ", tally
+  end subroutine
+
 end module
