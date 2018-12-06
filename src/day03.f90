@@ -20,12 +20,15 @@ module Day03
   type Claim
     integer :: x, y, width, height
   contains
-    procedure :: x2, y2
+    procedure :: x2, y2, Area
     procedure :: IsOverlap
   end type
 
+  ! for larger fabric, trade space for time
+  ! iterate over virtual fabric array, compare each cell to the list of claims
+
   private
-  public :: Problem03a, Problem03b
+  public :: Problem03
 
 contains
 
@@ -71,24 +74,6 @@ contains
     close(unit)
   end subroutine
 
-  subroutine Problem03a()
-    ! read a data structure comprising all the fabric claims
-    ! superimpose each region onto a 1000x1000 integer array representing the entire fabric
-    ! each square counts how many claims placed on it
-    ! count the number of squares with more than 1 claim
-    type(Claim), allocatable :: claims(:)
-    integer                  :: i, fabric(0:1000,0:1000)
-
-    call ReadClaims(claims)
-    fabric = 0
-    do i = 1, size(claims)
-      associate(x => claims(i)%x, y => claims(i)%y, width => claims(i)%width, height => claims(i)%height)
-        fabric(x:x+width-1,y:y+height-1) = fabric(x:x+width-1,y:y+height-1) + 1
-      end associate
-    end do
-    print "(a,i0)", "Ergebnis: ", count(fabric > 1)
-  end subroutine
-
   integer pure function x2(myclaim)
     class(Claim), intent(in) :: myclaim
 
@@ -119,26 +104,57 @@ contains
     end if
   end function
 
-  subroutine Problem03b()
-    ! read the fabric claim data structure
-    ! perform bounding-box tests
-    type(Claim), allocatable :: claims(:)
-    integer                  :: i, j
-    logical,     allocatable :: disqualified(:)
+  subroutine FillFabric(fabric, claims)
+    ! superimpose each claim onto an integer array representing the entire fabric
+    ! each square counts how many claims placed on it
+    ! count the number of squares with more than 1 claim
+    integer,     intent(out), allocatable :: fabric(:,:)
+    type(Claim), intent(in)               :: claims(:)
+    integer                               :: i
+
+    allocate(fabric(0:1000,0:1000))
+    fabric(:,:) = 0
+
+    do i = 1, size(claims)
+      associate(x => claims(i)%x, y => claims(i)%y, width => claims(i)%width, height => claims(i)%height)
+        fabric(x:x+width-1,y:y+height-1) = fabric(x:x+width-1,y:y+height-1) + 1
+      end associate
+    end do
+  end subroutine
+
+  subroutine Problem03(c)
+    integer,     intent(out)              :: c(2)
+    type(Claim),              allocatable :: claims(:), intersections(:)
+    integer                               :: i, j, ans
+    integer,                  allocatable :: fabric(:,:)
+    logical,                  allocatable :: disqualified(:)
 
     call ReadClaims(claims)
+    ! Part 1: "How many square inches of fabric are within two or more claims?"
+    call FillFabric(fabric, claims)
+
+    print "(a,i0)", "Ergebnis 1: ", count(fabric > 1)
+    call system_clock(c(1))
+
+    ! Part 2: "What is the ID of the only claim that doesn't overlap?"
+    !print "(a,i0)", "Ergebnis 2: ", pack([(i, i = 1, size(claims))], .not. disqualified)
     allocate(disqualified(size(claims)))
     disqualified = [( .false., i = 1, size(claims) )]
 
     outer: do i = 1, size(claims)
       if (disqualified(i)) cycle outer
       inner: do j = 1, size(claims)
-        if (i == j) cycle inner
-        if (claims(i)%IsOverlap(claims(j))) then
+        if (i == j) then
+          cycle inner
+        else if (claims(i)%IsOverlap(claims(j))) then
           disqualified([i,j]) = .true.
+          cycle
         end if
       end do inner
     end do outer
-    print "(a,i0)", "Ergebnis: ", pack([(i, i = 1, size(claims))], .not. disqualified)
+
+    print "(a,i0)", "Ergebnis 2: ", pack([(i, i = 1, size(claims))], .not. disqualified)
+    call system_clock(c(2))
   end subroutine
+
 end module

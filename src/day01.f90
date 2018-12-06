@@ -34,28 +34,26 @@ module Day01
     type(NodeInteger), allocatable :: mytree
   end type
 
-  public
+  private
+  public :: Problem01
 
 contains
 
-  subroutine Problem01a()
-    ! read file
-    ! sum up integers
-    ! spit out output
-    integer :: unit, iostat
-    integer :: total, nextint
+  subroutine ReadDiffs(diffs)
+    integer              :: unit, iostat
+    integer              :: nextint
+    integer, allocatable :: diffs(:)
 
-    total = 0
-    nextint = 0
+    allocate(diffs(0))
 
     open(newunit=unit, file="input/day01.txt", iostat=iostat, status="old")
     if (iostat /= 0) stop "Datenfehler."
+    read(unit, *, iostat=iostat) nextint
     do while (iostat == 0)
-      total = total + nextint
+      diffs = [ diffs, nextint ]
       read(unit, *, iostat=iostat) nextint
     end do
     close(unit)
-    print "(a,i0)", "Ergebnis: ", total
   end subroutine
 
   subroutine NodeIntegerCreate(this, key)
@@ -115,26 +113,24 @@ contains
     this%key = 0
   end subroutine
 
-  subroutine Problem01b()
+  subroutine Problem01(c)
     ! use a hash table of binary search trees
-    integer                        :: unit, iostat
-    integer                        :: nextint, total, i, hash
-    integer,           allocatable :: diffs(:)
-    type(Bucket)                   :: mybuckets(N)
-    logical                        :: is_duplicate
+    integer,      intent(out)              :: c(2)
+    integer                                :: total, i, hash
+    integer,                   allocatable :: diffs(:)
+    type(Bucket)                           :: mybuckets(N)
+    logical                                :: is_duplicate
 
+    call ReadDiffs(diffs)
+
+    ! Part 1: "What is the resulting frequency after all of the changes in
+    ! frequency have been applied?"
+    print "(a,i0)", "Ergebnis 1: ", sum(diffs)
+    call system_clock(c(1))
+
+    ! Part 2: "What is the first frequency your device reaches twice?"
     total = 0
-    allocate(diffs(0))
     is_duplicate = .false.
-
-    open(newunit=unit, file="input/day01.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
-    read(unit, *, iostat=iostat) nextint
-    do while (iostat == 0)
-      diffs = [ diffs, nextint ]
-      read(unit, *, iostat=iostat) nextint
-    end do
-    close(unit)
 
     outer: do
       inner: do i = 1, size(diffs)
@@ -149,7 +145,9 @@ contains
         end if
       end do inner
     end do outer
-    print "(a,i0)", "Ergebnis: ", total
+
+    print "(a,i0)", "Ergebnis 2: ", total
+    call system_clock(c(2))
   end subroutine
 
 end module

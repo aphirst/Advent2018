@@ -22,22 +22,15 @@ module Day04
     logical :: is_asleep(0:59)
   end type
 
-  type Hour
-    logical :: is_asleep(0:59)
-    integer :: frequency(0:59)
-  end type
-
-  type Guard
-    integer                 :: guard_id, total_sleep, frequency(0:59)
-    type(Hour), allocatable :: hourdata(:)
-  end type
-
   private
-  public :: Problem04a, Problem04a_smart, Problem04b, Problem04b_smart
+  public :: Problem04
 
 contains
 
   subroutine ParseNights(nights)
+    ! every "day" has 1 guard on duty (may start before midnight, i.e. the night before)
+    ! the only relevant time period on each day is 00:00 to 01:00, 60 minutes
+    ! list of all days, the guard ID for each, and whether asleep or awake for each minute
     type(Night),   allocatable :: nights(:)
     integer                    :: unit, iostat, N, i, breaks(2), minute
     character(60)              :: string
@@ -89,11 +82,6 @@ contains
     do i = 1, N
       nights(i)%sleep = count(nights(i)%is_asleep)
     end do
-  end subroutine
-
-  subroutine ConvertNightsToGuards(nights, guards)
-    type(Night), intent(in)               :: nights(:)
-    type(Guard), intent(out), allocatable :: guards(:)
   end subroutine
 
   integer pure function IntegerFind(list, item)
@@ -161,33 +149,30 @@ contains
     if(present(incidence)) incidence = minutes(bestminute)
   end subroutine
 
-  subroutine Problem04a()
-    ! every "day" has 1 guard on duty (may start before midnight, i.e. the night before)
-    ! the only relevant time period on each day is 00:00 to 01:00, 60 minutes
-    ! list of all days, the guard ID for each, and whether asleep or awake for each minute
-    type(Night), allocatable :: nights(:)
-    integer,     allocatable :: guard_ids(:), sleep(:)
-    integer                  :: i, bestguard, bestminute
+  subroutine Problem04(c)
+    integer,     intent(out)              :: c(2)
+    type(Night),              allocatable :: nights(:)
+    integer,                  allocatable :: guard_ids(:), sleep(:), guard_bestmins(:), bestincidences(:)
+    integer                               :: i, bestguard, bestminute
 
     call ParseNights(nights)
     call UniqueGuards(nights, guard_ids)
+
+    ! Part 1: "Find the guard that has the most minutes asleep. What minute
+    ! does that guard spend asleep the most? What is the ID of the guard you
+    ! chose multiplied by the minute you chose?"
     allocate(sleep(size(guard_ids)))
     do i = 1, size(guard_ids)
       call TotalSleepForGuard(nights, guard_ids(i), sleep(i))
     end do
     bestguard = guard_ids( maxloc(sleep,1) )
     call BestMinuteForGuard(nights, bestguard, bestminute)
-    print "(a,i0)", "Ergebnis: ", bestguard * bestminute
-  end subroutine
 
-  subroutine Problem04b()
-    ! for each guard, work out which minute he sleeps the most often on
-    type(Night), allocatable :: nights(:)
-    integer,     allocatable :: guard_ids(:), guard_bestmins(:), bestincidences(:)
-    integer                  :: i, bestguard, bestminute
+    print "(a,i0)", "Ergebnis 1: ", bestguard * bestminute
+    call system_clock(c(1))
 
-    call ParseNights(nights)
-    call UniqueGuards(nights, guard_ids)
+    ! Part 2: "Of all guards, which guard is most frequently asleep on the same
+    ! minute? What is the ID of that multiplied by that minute?"
     allocate(guard_bestmins(size(guard_ids)))
     allocate(bestincidences(size(guard_ids)))
     do i = 1, size(guard_ids)
@@ -195,23 +180,9 @@ contains
     end do
     bestguard = guard_ids( maxloc(bestincidences,1) )
     bestminute = guard_bestmins( maxloc(bestincidences,1) )
-    print "(a,i0)", "Ergebnis: ", bestguard * bestminute
-  end subroutine
 
-  subroutine Problem04a_smart()
-    ! call ParseNights(nights)
-    ! call ConvertNightsToGuards(nights, guards)
-    ! "Find the guard that has the most minutes asleep. What minute does that guard spend asleep the most?"
-    ! i = maxloc(guards%total_sleep,1)
-    ! bestguard = guards%guard_id(i)
-    ! bestminute = maxloc(guards(i)%frequency,1) - 1
-    ! print *, "Ergebnis: ", bestguard * bestminute
-  end subroutine
-
-  subroutine Problem04b_smart()
-    ! call ParseNights(nights)
-    ! call ConvertNightsToGuards(nights, guards)
-    ! "Of all guards, which guard is most frequently asleep on the same minute?"
+    print "(a,i0)", "Ergebnis 2: ", bestguard * bestminute
+    call system_clock(c(2))
   end subroutine
 
 end module

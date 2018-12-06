@@ -21,8 +21,11 @@ module Day06
     integer :: x, y
   end type
 
+  ! optimal solution using a k-d tree for storing the target coordinates
+  ! makes "nearest target coordinate to a given test point" much faster
+
   private
-  public :: Problem06a, Problem06b
+  public :: Problem06
 
 contains
 
@@ -52,7 +55,7 @@ contains
     dist = abs(p1 - q1) + abs(p2 - q2)
   end function
 
-  integer function BestCoord(coords, x, y)
+  integer pure function BestCoord(coords, x, y)
     ! return the index in coords(:) of the nearest coord to the input (x,y) point
     ! returns 0 if more than one
     type(Coord), intent(in) :: coords(:)
@@ -66,51 +69,48 @@ contains
     end if
   end function
 
-  subroutine Problem06a()
-    ! read all target coordinates
-    ! determine size of virtual grid
-    type(Coord), allocatable :: mycoords(:)
-    integer                  :: i, xmin, xmax, ymin, ymax, x, y
-    integer,     allocatable :: tally(:)
-    logical,     allocatable :: is_still_qualified(:)
-
-    call ReadCoords(mycoords)
+  pure function FiniteAreas(mycoords)
+    ! loop over a virtual grid bounded by the target coordinates
+    ! for coordinates whose regions pass off the edge (i.e. are infinite) return zero
+    ! otherwise return the area (number of points) for each coordinate's nearest region
+    type(Coord), intent(in) :: mycoords(:)
+    integer                 :: finiteareas(size(mycoords)), xmin, xmax, ymin, ymax, i, x, y
+    logical                 :: is_finite(size(mycoords))
 
     xmin = minval(mycoords%x,1)
     xmax = maxval(mycoords%x,1)
     ymin = minval(mycoords%y,1)
     ymax = maxval(mycoords%y,1)
 
-    allocate(tally( size(mycoords) ))
-    tally = [( 0, i = 1, size(mycoords) )]
-    is_still_qualified = [( .true., i = 1, size(mycoords) )]
+    finiteareas = 0
+    is_finite = [( .true., i = 1, size(mycoords) )]
     ! process all points in the virtual grid
     do x = xmin, xmax
       do y = ymin, ymax
         i = BestCoord(mycoords, x, y)
+        if (.not. is_finite(i)) then
+          cycle
+        end if
+        if ((x == xmin) .or. (x == xmax) .or. (y == ymin) .or. (y == ymax)) then
+          ! disqualify target coordinate
+          is_finite(i) = .false.
+          finiteareas(i) = 0
+          cycle
+        end if
         if (i /= 0) then
-          tally(i) = tally(i) + 1
+          finiteareas(i) = finiteareas(i) + 1
         else
           ! ignore grid points with duplicate nearest-coords
           cycle
         end if
-        ! otherwise
-        if ((x == xmin) .or. (x == xmax) .or. (y == ymin) .or. (y == ymax)) then
-          ! disqualify target coordinate
-          is_still_qualified(i) = .false.
-        end if
       end do
     end do
+  end function
 
-    print "(a,i0)", "Ergebnis: ", maxval(tally(1:),1,is_still_qualified)
-  end subroutine
-
-  subroutine Problem06b()
-    type(Coord), allocatable            :: mycoords(:)
-    integer                             :: i, xmin, xmax, ymin, ymax, x, y, tally
-    integer,                  parameter :: N = 10000
-
-    call ReadCoords(mycoords)
+  integer pure function CountDistUnderN(mycoords, N) result(tally)
+    type(Coord), intent(in) :: mycoords(:)
+    integer,     intent(in) :: N
+    integer                 :: xmin, xmax, ymin, ymax, x, y, i
 
     xmin = minval(mycoords%x,1)
     xmax = maxval(mycoords%x,1)
@@ -124,7 +124,22 @@ contains
         if (i < N) tally = tally + 1
       end do
     end do
-    print "(a,i0)", "Ergebnis: ", tally
+  end function
+
+  subroutine Problem06(c)
+    integer, intent(out) :: c(2)
+    type(Coord), allocatable :: mycoords(:)
+
+    call ReadCoords(mycoords)
+
+    ! Part 1: "What is the size of the largest area that isn't infinite?"
+    print "(a,i0)", "Ergebnis 1: ", maxval(FiniteAreas(mycoords),1)
+    call system_clock(c(1))
+
+    ! Part 2: "What is the size of the region containing all locations which
+    ! have a total distance to all given coordinates of less than 10000?"
+    print "(a,i0)", "Ergebnis 2: ", CountDistUnderN(mycoords, N=10000)
+    call system_clock(c(2))
   end subroutine
 
 end module

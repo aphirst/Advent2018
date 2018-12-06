@@ -69,9 +69,10 @@ contains
     integer,             allocatable :: polymer(:), collapsed(:)
     integer                          :: i
 
-    polymer = polymer_in
+    allocate(polymer(size(polymer_in)))
+    polymer(:) = polymer_in
     do
-      ! convert dupes to junk
+      ! convert dupes to junk (spaces)
       do i = 1, size(polymer)-1
         if ( polymer(i) == iachar(" ") ) then
           cycle
@@ -79,7 +80,7 @@ contains
           polymer(i:i+1) = iachar(" ")
         end if
       end do
-      ! collapse using a mask around the junk
+      ! collapse using a mask around the junk (spaces)
       collapsed = pack(polymer, polymer /= iachar(" "))
       if (size(collapsed) == size(polymer)) return
       call move_alloc(collapsed, polymer)

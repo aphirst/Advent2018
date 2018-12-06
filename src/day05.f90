@@ -30,7 +30,7 @@ module Day05
   end type
 
   private
-  public :: Problem05a, Problem05b
+  public :: Problem05
 
 contains
 
@@ -64,9 +64,13 @@ contains
     if (mystack%IsEmpty()) then
       call Init(mystack, key)
     else
+      ! use temporary node to "keep" the reference to the list's old head
       mynode => mystack%head
+      ! clear the old head
       allocate(mystack%head)
+      ! place the new value directly into the new head
       mystack%head%key = key
+      ! stitch the list back together by point to the "kept" reference
       mystack%head%next => mynode
       mystack%num_nodes = mystack%num_nodes + 1
     end if
@@ -119,7 +123,7 @@ contains
     end do
   end function
 
-  subroutine Clear(mystack)
+  elemental impure subroutine Clear(mystack)
     type(Stack), intent(in out) :: mystack
     integer                     :: i
 
@@ -193,17 +197,6 @@ contains
     call Clear(left)
   end function
 
-  subroutine Problem05a()
-    type(Stack) :: polymer, collapsed
-
-    call ReadPolymer(polymer)
-    collapsed = FullCollapse(polymer)
-    print "(a,i0)", "Ergebnis: ", collapsed%num_nodes
-
-    call Clear(polymer)
-    call Clear(collapsed)
-  end subroutine
-
   function RemoveLetters(polymer, ascii)
     ! remove all instances of the specified ascii codes from the integer input
     type(Stack), intent(in) :: polymer
@@ -225,26 +218,34 @@ contains
     end do
   end function
 
-  subroutine Problem05b()
-    type(Stack)          :: polymer, collapsed, collapsed_new(0:25), polymer_trim(0:25)
-    integer              :: i, sizes(0:25)
+  subroutine Problem05(c)
+    integer,     intent(out) :: c(2)
+    type(Stack)              :: polymer, collapsed, collapsed_new(0:25), polymer_trim(0:25)
+    integer                  :: i, sizes(0:25)
 
     call ReadPolymer(polymer)
+
+    ! Part 1: "How many units remain after fully reacting the polymer you scanned?"
     collapsed = FullCollapse(polymer)
 
+    print "(a,i0)", "Ergebnis 1: ", collapsed%num_nodes
+    call system_clock(c(1))
+
+    ! Part 2: "What is the length of the shortest polymer you can produce by
+    ! removing all units of exactly one type and fully reacting the result?"
     do i = 0, 25
       polymer_trim(i) = RemoveLetters(collapsed, [iachar("A")+i, iachar("a")+i])
       collapsed_new(i) = FullCollapse(polymer_trim(i))
       sizes(i) = collapsed_new(i)%num_nodes
     end do
-    print "(a,i0)", "Ergebnis: ", minval(sizes)
+
+    print "(a,i0)", "Ergebnis 2: ", minval(sizes)
+    call system_clock(c(2))
 
     call Clear(polymer)
     call Clear(collapsed)
-    do i = 0, 25
-      call Clear(polymer_trim(i))
-      call Clear(collapsed_new(i))
-    end do
+    call Clear(polymer_trim)
+    call Clear(collapsed_new)
   end subroutine
 
 end module

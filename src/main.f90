@@ -24,9 +24,8 @@ program Advent2018
 
   implicit none
 
-  integer       :: i, c(2), cr, cm
-  real          :: rate
-  character(80) :: cwd
+  integer :: i, c(3), cr, cm
+  real    :: rate
 
   print *, "Grüß Gott!"
   print *, ""
@@ -35,47 +34,31 @@ program Advent2018
   call system_clock(count_max=cm)
   rate = real(cr)
 
-  do i = 1, 60
+  do i = 1, 25
     call system_clock(c(1))
     select case (i)
     case (1)
-      print *, "1. Tag"
-      call Problem01a()
+      print *, "1. Tag:"
+      call Problem01(c(2:3))
     case (2)
-      call Problem01b()
-      !call Problem01b_bad()
+      print *, "2. Tag:"
+      call Problem02(c(2:3))
     case (3)
-      print *, "2. Tag"
-      call Problem02a()
+      print *, "3. Tag:"
+      call Problem03(c(2:3))
     case (4)
-      call Problem02b()
+      print *, "4. Tag:"
+      call Problem04(c(2:3))
     case (5)
-      print *, "3. Tag"
-      call Problem03a()
+      print *, "5. Tag:"
+      call Problem05(c(2:3))
     case (6)
-      call Problem03b()
-    case (7)
-      print *, "4. Tag"
-      call Problem04a()
-    case (8)
-      call Problem04b()
-    case (9)
-      print *, "5. Tag"
-      call Problem05a()
-      !call Problem05a_bad()
-    case (10)
-      call Problem05b()
-      !call Problem05b_bad()
-    case (11)
-      print *, "6. Tag"
-      call Problem06a()
-    case (12)
-      call Problem06b()
+      print *, "6. Tag:"
+      call Problem06(c(2:3))
     case default
-      exit
+      cycle
     end select
-    call system_clock(c(2))
-    print "(a,f8.3)", "Programmlaufzeit:", (c(2)-c(1))/rate
+    print "(3(a,f0.3))", "Laufzeiten: ", (c(2)-c(1))/rate, " ", (c(3)-c(2))/rate, " ", (c(3)-c(1))/rate
     print *, ""
   end do
 

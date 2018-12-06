@@ -18,9 +18,26 @@ module Day02
   implicit none
 
   private
-  public :: Problem02a, Problem02b
+  public :: Problem02
 
 contains
+
+  subroutine ReadStrings(strings)
+    character(26), allocatable :: strings(:)
+    integer                    :: unit, iostat
+    character(26)              :: stringtemp
+
+    allocate(strings(0))
+
+    open(newunit=unit, file="input/day02.txt", iostat=iostat, status="old")
+    if (iostat /= 0) stop "Datenfehler."
+    read(unit, *, iostat=iostat) stringtemp
+    do while (iostat == 0)
+      strings = [strings, stringtemp]
+      read(unit, *, iostat=iostat) stringtemp
+    end do
+    close(unit)
+  end subroutine
 
   pure function CountInstances(string)
     ! take a single string (character variable of nonzero length)
@@ -47,68 +64,56 @@ contains
     end if
   end subroutine
 
-  subroutine Problem02a()
-    ! read list of strings (assume all strings same length)
-    ! count instances of each of 26 possible letters (all lowercase)
-    ! save whether any letter occurred exactly twice
-    ! same for exactly thrice
-    ! repeat for all strings
-    ! checksum is (# of strings with a 2-duplicate) * (# with a 3-duplicate)
-    integer       :: unit, iostat, twice, thrice, checksum
-    character(26) :: string
+  subroutine Problem02(c)
+    integer,       intent(out)              :: c(2)
+    character(26),              allocatable :: strings(:)
+    integer                                 :: i, j, k, twice, thrice, checksum
+    integer,                    allocatable :: diff(:)
+    character(26)                           :: string_common
 
+    call ReadStrings(strings)
+
+    ! Part 1: "Count the number of boxes with an ID containing exactly two of
+    ! any letter and then separately with exactly three of any letter.
+    ! Multiply those two counts together to get a rudimentary checksum.
+    ! What is the checksum for your list of box IDs?"
     twice = 0
     thrice = 0
 
-    open(newunit=unit, file="input/day02.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
-    read(unit, *, iostat=iostat) string
-    do while (iostat == 0)
-      call UpdateChecksumCache(CountInstances(string), twice, thrice)
-      read(unit, *, iostat=iostat) string
+    do i = 1, size(strings)
+      call UpdateChecksumCache(CountInstances(strings(i)), twice, thrice)
     end do
-    close(unit)
     checksum = twice * thrice
-    print "(a,i0)", "Ergebnis: ", checksum
-  end subroutine
 
-  subroutine Problem02b()
+    print "(a,i0)", "Ergebnis 1: ", checksum
+    call system_clock(c(1))
+
+    ! Part 2: "What letters are common between the two correct box IDs?
+    ! These will differ by exactly one character at the same position in both strings."
+
     ! read entire array of strings
     ! for each string, compare with all other strings
     ! get the indices of different characters
     ! if list has only 1 index, output string with the different element sliced out
-    integer                    :: unit, iostat, i, j, k
-    character(26)              :: stringtemp
-    character(26), allocatable :: string(:)
-    integer,       allocatable :: diff(:)
-
-    allocate(string(0))
-
-    open(newunit=unit, file="input/day02.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
-    read(unit, *, iostat=iostat) stringtemp
-    do while (iostat == 0)
-      string = [string, stringtemp]
-      read(unit, *, iostat=iostat) stringtemp
-    end do
-    close(unit)
-
-    outer: do i = 1, size(string)
-      inner: do j = i, size(string)
-        if (i == j) cycle inner
+    outer: do i = 1, size(strings)
+      inner: do j = i+1, size(strings)
         if (allocated(diff)) deallocate(diff)
         allocate(diff(0))
         do k = 1, 26
           if (size(diff) > 1) cycle inner
-          if (string(i)(k:k) /= string(j)(k:k)) then
+          if (strings(i)(k:k) /= strings(j)(k:k)) then
             diff = [diff, k]
           end if
         end do
         if (size(diff) == 1) then
-          print "(3a)", "Ergebnis: ", string(i)(1:diff(1)-1), string(i)(diff(1)+1:26)
-          return
+          string_common = strings(i)(1:diff(1)-1)//strings(i)(diff(1)+1:)
+          exit outer
         end if
       end do inner
     end do outer
+
+    print "(3a)", "Ergebnis: ", string_common
+    call system_clock(c(2))
   end subroutine
+
 end module
