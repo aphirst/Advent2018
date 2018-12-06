@@ -22,7 +22,7 @@ module Day02
 
 contains
 
-  function CountInstances(string)
+  pure function CountInstances(string)
     ! take a single string (character variable of nonzero length)
     ! return an array where each element is the # of times a given letter appears
     ! all input is lower case
@@ -34,7 +34,7 @@ contains
     end do
   end function
 
-  subroutine UpdateChecksumCache(instances, twice, thrice)
+  pure subroutine UpdateChecksumCache(instances, twice, thrice)
     ! for each letter which occured exactly twice or thrice, update the counters
     integer, intent(in)     :: instances(26)
     integer, intent(in out) :: twice, thrice

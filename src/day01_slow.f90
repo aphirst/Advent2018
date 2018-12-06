@@ -139,7 +139,6 @@ contains
   end subroutine
 
   subroutine Problem01b_better()
-    ! TODO: Smart version of Problem01b
     ! keep the list of intermediates sorted, use binary search/insertion
     integer              :: unit, iostat
     integer              :: nextint, total, i, index
