@@ -106,7 +106,6 @@ contains
   end subroutine
 
   subroutine Problem06b()
-    ! use a real grid for best distances this time
     type(Coord), allocatable            :: mycoords(:)
     integer                             :: i, xmin, xmax, ymin, ymax, x, y, tally
     integer,                  parameter :: N = 10000
