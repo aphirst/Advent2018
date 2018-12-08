@@ -86,6 +86,7 @@ contains
     checksum = twice * thrice
 
     print "(a,i0)", "Ergebnis 1: ", checksum
+    print "(a,i0)", "Richtig:    ", 7808
     call system_clock(c(1))
 
     ! Part 2: "What letters are common between the two correct box IDs?
@@ -113,6 +114,7 @@ contains
     end do outer
 
     print "(3a)", "Ergebnis 2: ", string_common
+    print "(2a)", "Richtig:    ", "efmyhuckqldtwjyvisipargno"
     call system_clock(c(2))
   end subroutine
 

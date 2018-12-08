@@ -169,6 +169,7 @@ contains
     call BestMinuteForGuard(nights, bestguard, bestminute)
 
     print "(a,i0)", "Ergebnis 1: ", bestguard * bestminute
+    print "(a,i0)", "Richtig:    ", 146622
     call system_clock(c(1))
 
     ! Part 2: "Of all guards, which guard is most frequently asleep on the same
@@ -182,6 +183,7 @@ contains
     bestminute = guard_bestmins( maxloc(bestincidences,1) )
 
     print "(a,i0)", "Ergebnis 2: ", bestguard * bestminute
+    print "(a,i0)", "Richtig:    ", 31848
     call system_clock(c(2))
   end subroutine
 

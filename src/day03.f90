@@ -130,10 +130,12 @@ contains
     logical,                  allocatable :: disqualified(:)
 
     call ReadClaims(claims)
+
     ! Part 1: "How many square inches of fabric are within two or more claims?"
     call FillFabric(fabric, claims)
 
     print "(a,i0)", "Ergebnis 1: ", count(fabric > 1)
+    print "(a,i0)", "Richtig:    ", 110827
     call system_clock(c(1))
 
     ! Part 2: "What is the ID of the only claim that doesn't overlap?"
@@ -154,6 +156,7 @@ contains
     end do outer
 
     print "(a,i0)", "Ergebnis 2: ", pack([(i, i = 1, size(claims))], .not. disqualified)
+    print "(a,i0)", "Richtig:    ", 116
     call system_clock(c(2))
   end subroutine
 

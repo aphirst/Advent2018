@@ -61,6 +61,7 @@ contains
     ! Part 1: "What is the resulting frequency after all of the changes in
     ! frequency have been applied?"
     print "(a,i0)", "Ergebnis 1: ", sum(diffs)
+    print "(a,i0)", "Richtig:    ", 402
     call system_clock(c(1))
 
     ! Part 2: "What is the first frequency your device reaches twice?"
@@ -77,6 +78,7 @@ contains
     end do outer
 
     print "(a,i0)", "Ergebnis 2: ", total
+    print "(a,i0)", "Richtig:    ", 481
     call system_clock(c(2))
 
     do i = 1, N

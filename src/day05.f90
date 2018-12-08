@@ -229,6 +229,7 @@ contains
     collapsed = FullCollapse(polymer)
 
     print "(a,i0)", "Ergebnis 1: ", collapsed%num_nodes
+    print "(a,i0)", "Richtig:    ", 10598
     call system_clock(c(1))
 
     ! Part 2: "What is the length of the shortest polymer you can produce by
@@ -240,6 +241,7 @@ contains
     end do
 
     print "(a,i0)", "Ergebnis 2: ", minval(sizes)
+    print "(a,i0)", "Richtig:    ", 5312
     call system_clock(c(2))
 
     call Clear(polymer)

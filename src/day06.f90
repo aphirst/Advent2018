@@ -134,11 +134,13 @@ contains
 
     ! Part 1: "What is the size of the largest area that isn't infinite?"
     print "(a,i0)", "Ergebnis 1: ", maxval(FiniteAreas(mycoords),1)
+    print "(a,i0)", "Richtig:    ", 4016
     call system_clock(c(1))
 
     ! Part 2: "What is the size of the region containing all locations which
     ! have a total distance to all given coordinates of less than 10000?"
     print "(a,i0)", "Ergebnis 2: ", CountDistUnderN(mycoords, N=10000)
+    print "(a,i0)", "Richtig:    ", 46306
     call system_clock(c(2))
   end subroutine
 
