@@ -78,10 +78,8 @@ contains
     integer,    intent(in)          :: key
 
     if (.not. associated(this)) then
-      !print *, "not recurse"
       tc = .false.
     else
-      !print *, 'recurse'
       if (key == this%key) then
         tc = .true.
       else if (key < this%key) then
