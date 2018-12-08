@@ -1,19 +1,21 @@
 # depslib dependency file v1.0
-1544109813 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day01.f90
+1544281393 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day01.f90
 
-1544128751 source:/home/adam/Projects/Personal/Programming/Advent2018/src/main.f90
+1544280993 source:/home/adam/Projects/Personal/Programming/Advent2018/src/main.f90
 
-1544128738 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day02.f90
+1544280661 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day02.f90
 
-1544126902 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day03.f90
+1544280652 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day03.f90
 
-1544109784 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day04.f90
+1544280707 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day04.f90
 
-1544119189 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day05.f90
+1544280913 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day05.f90
 
 1544109130 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day05_slow.f90
 
 1544088594 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day01_slow.f90
 
-1544111476 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day06.f90
+1544280948 source:/home/adam/Projects/Personal/Programming/Advent2018/src/day06.f90
+
+1544281188 source:/home/adam/Projects/Personal/Programming/Advent2018/src/trees.f90
 
