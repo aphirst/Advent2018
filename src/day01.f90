@@ -15,7 +15,7 @@
 ! along with Advent2018. If not, see <http://www.gnu.org/licenses/>.
 
 module Day01
-  use Trees, Node => TreeNode
+  use Trees
 
   implicit none
 
@@ -23,7 +23,7 @@ module Day01
   integer, parameter :: N = 65536
 
   type Bucket
-    type(Node), pointer :: head => NULL()
+    type(Tree), pointer :: head => NULL()
   end type
 
   private
@@ -71,7 +71,7 @@ contains
       inner: do i = 1, size(diffs)
         total = total + diffs(i)
         hash = modulo(total, N) + 1
-        call Tree_InsertNode(mybuckets(hash)%head, total, is_duplicate)
+        call Tree_Insert(mybuckets(hash)%head, total, is_duplicate)
         if (is_duplicate) exit outer
       end do inner
     end do outer

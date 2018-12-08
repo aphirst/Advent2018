@@ -15,21 +15,20 @@
 ! along with Advent2018. If not, see <http://www.gnu.org/licenses/>.
 
 module Trees
-
   implicit none
 
-  type TreeNode
-    type(TreeNode), pointer :: left => NULL(), right => NULL()
-    integer                 :: key
+  type Tree
+    type(Tree), pointer :: left => NULL(), right => NULL()
+    integer             :: key
   end type
 
   public
 
 contains
 
-  subroutine Tree_InitNode(this, key)
-    type(TreeNode),             pointer :: this
-    integer,        intent(in)          :: key
+  subroutine Tree_Init(this, key)
+    type(Tree),             pointer :: this
+    integer,    intent(in)          :: key
 
     if (associated(this)) stop "Logikfehler: Baum ist bereits zugeordnet."
     allocate(this)
@@ -39,7 +38,7 @@ contains
   end subroutine
 
   recursive subroutine Tree_Destroy(this)
-    type(TreeNode), pointer :: this
+    type(Tree), pointer :: this
 
     if (associated(this)) then
       call Tree_Destroy(this%left)
@@ -48,7 +47,7 @@ contains
   end subroutine
 
   integer recursive function Tree_CountNodes(this) result(total)
-    type(TreeNode), pointer :: this
+    type(Tree), pointer :: this
 
     if (associated(this)) then
       total = Tree_CountNodes(this%left) + 1 + Tree_CountNodes(this%right)
@@ -58,8 +57,8 @@ contains
   end function
 
   recursive function Tree_InOrder(this) result(inorder)
-    type(TreeNode), pointer     :: this
-    integer,        allocatable :: inorder(:)
+    type(Tree), pointer     :: this
+    integer,    allocatable :: inorder(:)
 
     if (associated(this)) then
       inorder = [ Tree_InOrder(this%left), this%key, Tree_InOrder(this%right) ]
@@ -69,35 +68,55 @@ contains
   end function
 
   logical function Tree_HasNoChildren(this) result(hnc)
-    class(TreeNode), pointer :: this
+    type(Tree), pointer :: this
 
     hnc = .not. (associated(this%left) .or. associated(this%right))
   end function
 
-  recursive subroutine Tree_InsertNode(this, key, is_duplicate)
-    type(TreeNode),              pointer :: this
-    integer,        intent(in)           :: key
-    logical,        intent(out)          :: is_duplicate
-    type(TreeNode),              pointer :: mynode => NULL()
+  recursive subroutine Tree_Insert(this, key, is_duplicate)
+    type(Tree),              pointer             :: this
+    integer,    intent(in)                       :: key
+    logical,    intent(out),            optional :: is_duplicate
 
-    is_duplicate = .false.
+    if (present(is_duplicate)) is_duplicate = .false.
     if (associated(this)) then
       if (key < this%key) then
-        call Tree_InsertNode(this%left, key, is_duplicate)
+        call Tree_Insert(this%left, key, is_duplicate)
       else if (key > this%key) then
-        call Tree_InsertNode(this%right, key, is_duplicate)
+        call Tree_Insert(this%right, key, is_duplicate)
       else
         ! TODO: work out where to insert duplicates
-        is_duplicate = .true.
+        ! Should duplicates even be inserted?
+        if (present(is_duplicate)) is_duplicate = .true.
       end if
     else
-      call Tree_InitNode(this, key)
+      call Tree_Init(this, key)
     end if
   end subroutine
 
+  recursive subroutine Tree_CreateBalanced(this, sorted_keys)
+    ! keys must be pre-sorted
+    type(Tree),             pointer :: this
+    integer,    intent(in)          :: sorted_keys(:)
+    integer                         :: N, mid
+
+    N = size(sorted_keys)
+    select case (size(sorted_keys))
+    case(0)
+      return
+    case(1)
+      call Tree_Init(this, sorted_keys(1))
+    case default
+      mid = (1+N)/2
+      call Tree_Init(this, sorted_keys(mid))
+      call Tree_CreateBalanced(this%left, sorted_keys(:mid-1))
+      call Tree_CreateBalanced(this%right, sorted_keys(mid+1:))
+    end select
+  end subroutine
+
   recursive subroutine Tree_PopSmallest(this, key)
-    type(TreeNode),              pointer :: this, temp
-    integer,        intent(out)          :: key
+    type(Tree),              pointer :: this, temp
+    integer,    intent(out)          :: key
 
     if (.not. associated(this)) stop "Logikfehler: Baum ist bereits leer."
     if (associated(this%left)) then
@@ -111,6 +130,17 @@ contains
       else
         deallocate(this)
       end if
+    end if
+  end subroutine
+
+  recursive subroutine Tree_Append(this, key)
+    type(Tree), pointer :: this
+    integer, intent(in) :: key
+
+    if (associated(this)) then
+      call Tree_Append(this%right, key)
+    else
+      call Tree_Init(this, key)
     end if
   end subroutine
 

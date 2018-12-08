@@ -3,23 +3,28 @@
 #
 
 SRCS_f90d1 = \
-day06.f90 \
-day02.f90 \
-main.f90 \
+trees.f90 \
+graphs.f90 \
 day01.f90 \
-day04.f90 \
+day02.f90 \
 day03.f90 \
-day05.f90 
+day04.f90 \
+day05.f90 \
+day06.f90 \
+day07.f90 \
+main.f90
 
 OBJS_f90d1 = \
-day01_slow.o \
-day06.o \
-day02.o \
-main.o \
+trees.o \
+graphs.o \
 day01.o \
-day04.o \
+day02.o \
 day03.o \
-day05.o 
+day04.o \
+day05.o \
+day06.o \
+day07.o \
+main.o
 
 SRC_DIR_f90d1 = src/
 OBJS_DIR = obj/Debug/src/
@@ -51,10 +56,28 @@ clean :
 	rm -f $(EXE_DIR)$(EXE)
 
 # Dependencies of files
-day06.o: \
-    day06.f90
+trees.o: \
+    trees.f90
+graphs.o: \
+    graphs.f90 \
+    trees.o
+day01.o: \
+    day01.f90 \
+    trees.o
 day02.o: \
     day02.f90
+day03.o: \
+    day03.f90
+day04.o: \
+    day04.f90
+day05.o: \
+    day05.f90
+day06.o: \
+    day06.f90
+day07.o: \
+    day07.f90 \
+    graphs.o \
+    trees.o
 main.o: \
     main.f90 \
     day01.o \
@@ -62,13 +85,6 @@ main.o: \
     day03.o \
     day04.o \
     day05.o \
-    day06.o
-day01.o: \
-    day01.f90
-day04.o: \
-    day04.f90
-day03.o: \
-    day03.f90
-day05.o: \
-    day05.f90
+    day06.o \
+    day07.o
 
