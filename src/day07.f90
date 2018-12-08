@@ -16,7 +16,7 @@ contains
     character(50)                           :: str
 
     call execute_command_line("rm input/day07_length.txt")
-    call execute_command_line("expr `wc -m < input/day07.txt` - `wc -l < input/day07.txt` > input/day07_length.txt")
+    call execute_command_line("expr `wc -l < input/day07.txt` > input/day07_length.txt")
     open(newunit=unit, file="input/day07_length.txt", iostat=iostat, status="old")
     if (iostat /= 0) stop "Datenfehler."
     read(unit,*) num_edges

@@ -73,6 +73,25 @@ contains
     hnc = .not. (associated(this%left) .or. associated(this%right))
   end function
 
+  logical recursive function Tree_Contains(this, key) result(tc)
+    type(Tree),             pointer :: this
+    integer,    intent(in)          :: key
+
+    if (.not. associated(this)) then
+      !print *, "not recurse"
+      tc = .false.
+    else
+      !print *, 'recurse'
+      if (key == this%key) then
+        tc = .true.
+      else if (key < this%key) then
+        tc = Tree_Contains(this%left, key)
+      else
+        tc = Tree_Contains(this%right, key)
+      end if
+    end if
+  end function
+
   recursive subroutine Tree_Insert(this, key, is_duplicate)
     type(Tree),              pointer             :: this
     integer,    intent(in)                       :: key

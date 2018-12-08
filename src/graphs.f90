@@ -76,46 +76,53 @@ contains
     end do
   end subroutine
 
-  subroutine Graph_TopologicalSort(edges, nodes, start_tree, sorted_ids, is_cyclic)
+  subroutine Graph_TopologicalSort(edges_in, nodes, start_tree, sorted_ids, is_cyclic)
     ! use Khan's algorithm as described on Wikipedia
     ! https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm
     ! using a sorted tree for S imposes the required lexicographic preference
-    type(Edge), intent(in)               :: edges(:)
+    type(Edge), intent(in)               :: edges_in(:)
     integer,    intent(in)               :: nodes(:)
     type(Tree),              pointer     :: start_tree, sorted_tree => NULL()
     integer,    intent(out), allocatable :: sorted_ids(:)
     logical,    intent(out)              :: is_cyclic
+    type(Edge),              allocatable :: edges(:)
     integer                              :: n, m, e
-    logical                              :: is_edge_removed(size(edges))
+    type(Tree),              pointer     :: removed_node_indices => NULL()
 
-    is_edge_removed = .false.
+    edges = edges_in
     ! S = Set of all nodes with no incoming edge
     ! while S is non-empty
     do while (Tree_CountNodes(start_tree) > 0)
       ! remove a node n from S
       call Tree_PopSmallest(start_tree, n)
-      ! add n to tail of result
+      ! add node n to tail of result
       call Tree_Append(sorted_tree, n)
-      ! for each node m with an edge e from n to m
-      ! TODO: simplify loop logic
+      ! for each node m with an edge e from node n to node m (from those still "in" edges)
+      ! TODO: further simplify loop logic
       ! with an IMPURE ELEMENTAL Tree_Insert a one-liner may be possible
-      do e = 1, size(edges)
-        if ( is_edge_removed(e) ) cycle
-        do m = 1, size(nodes)
+      next_m: do m = 1, size(nodes)
+        ! skip any `m` which have already been removed from the graph
+        if ( Tree_Contains(removed_node_indices, m) ) cycle next_m
+        do e = 1, size(edges)
           if ( edges(e) == Edge(n,nodes(m)) ) then
             ! remove edge e from the graph
-            is_edge_removed(e) = .true.
-            ! if m has no other incoming edges
-            if ( count((edges%right == nodes(m)) .and. .not. is_edge_removed) == 0 ) then
-              ! insert m into s
+            edges = [edges(:e-1), edges(e+1:)]
+            ! if node m has no other incoming edges
+            if ( any(edges%right == nodes(m)) ) then
+            else
+              ! insert m into S
               call Tree_Insert(start_tree, nodes(m))
+              ! keep track of all `m` which have been removed from the graph
+              call Tree_Insert(removed_node_indices, m)
             end if
+            cycle next_m
           end if
         end do
-      end do
+      end do next_m
+      ! repeat until S is empty
     end do
     ! if graph has edges
-    is_cyclic = any(.not. is_edge_removed)
+    is_cyclic = (size(edges) > 0)
     ! flatten output
     allocate(sorted_ids(Tree_CountNodes(sorted_tree)))
     sorted_ids(:) = Tree_InOrder(sorted_tree)
