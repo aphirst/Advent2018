@@ -39,14 +39,14 @@ contains
   end function
 
   function Graph_GetAllIDs(edges) result(ids)
-    type(Edge), intent(in)              :: edges(:)
-    integer                             :: e
-    type(Tree),             pointer     :: id_tree => NULL()
+    type(Edge), intent(in)              :: edges(:) ! array prevents type-bound
+    integer                             :: i
+    type(Tree),             pointer     :: id_tree => NULL() ! prevents PURE
     integer,                allocatable :: ids(:)
 
-    do e = 1, size(edges)
-      call Tree_Insert(id_tree, edges(e)%left)
-      call Tree_Insert(id_tree, edges(e)%right)
+    do i = 1, size(edges)
+      call Tree_Insert(id_tree, edges(i)%left)
+      call Tree_Insert(id_tree, edges(i)%right)
     end do
     ids = Tree_InOrder(id_tree)
   end function
@@ -99,9 +99,9 @@ contains
       ! for each node m with an edge e from n to m
       ! TODO: simplify loop logic
       ! with an IMPURE ELEMENTAL Tree_Insert a one-liner may be possible
-      do m = 1, size(nodes)
-        do e = 1, size(edges)
-          if ( is_edge_removed(e) ) cycle
+      do e = 1, size(edges)
+        if ( is_edge_removed(e) ) cycle
+        do m = 1, size(nodes)
           if ( edges(e) == Edge(n,nodes(m)) ) then
             ! remove edge e from the graph
             is_edge_removed(e) = .true.

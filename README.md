@@ -15,6 +15,7 @@ Compiled using `GNU Fortran (GCC) 8.2.1 20181127`.
 <tr><th>04</th><td>0.026 s</td><td>0.000 s</td><td>0.028 s</td><td>0.000 s</td><td>0.071 s</td><td>0.001 s</td></tr>
 <tr><th>05</th><td>0.019 s</td><td>0.031 s</td><td>0.019 s</td><td>0.033 s</td><td>0.051 s</td><td>0.072 s</td></tr>
 <tr><th>06</th><td>0.020 s</td><td>0.003 s</td><td>0.024 s</td><td>0.002 s</td><td>0.057 s</td><td>0.017 s</td></tr>
+<tr><th>07</th><td>0.035 s</td><td> - </td><td>0.045 s</td><td> - </td><td>0.098 s</td><td> - </td></tr>
 <tr></tr>
-<tr><th>Total</th><th colspan=2 align="center">0.155 s</th><th colspan=2>0.165 s</th><th colspan=2>0.448 s</th></tr>
+<tr><th>Total</th><th colspan=2 align="center">0.183 s</th><th colspan=2>0.207 s</th><th colspan=2>0.527 s</th></tr>
 </table>
