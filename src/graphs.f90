@@ -28,6 +28,24 @@ module Graphs
     generic   :: operator(==) => IsEqual
   end type
 
+  type List
+    integer, allocatable :: keys(:)
+  end type
+
+  ! must be constructed such that nodes(:) are in ascending order
+  ! address this%lists(:) via same indices as nodes(:)
+  ! this%lists(i)%keys(:) contains actual node IDs
+  type Graph
+    integer                 :: N
+    integer,    allocatable :: nodes(:)
+    type(List), allocatable :: lists(:)
+  contains
+    procedure :: TopologicalSort => Graph_TopologicalSort
+    procedure :: Create => Graph_Create
+    procedure :: AddNode => Graph_AddNode
+    ! procedure :: GetNodeIndex
+  end type
+
   public
 
 contains
@@ -39,6 +57,7 @@ contains
   end function
 
   function Graph_GetAllIDs(edges) result(ids)
+    ! sorting should be a separate "tree sort"
     type(Edge), intent(in)              :: edges(:) ! array prevents type-bound
     integer                             :: i
     type(Tree),             pointer     :: id_tree => NULL() ! prevents PURE
@@ -49,6 +68,7 @@ contains
       call Tree_Insert(id_tree, edges(i)%right)
     end do
     ids = Tree_InOrder(id_tree)
+    call Tree_Destroy(id_tree)
   end function
 
   subroutine Graph_GetStartIDs(edges, nodes, start_ids)
@@ -61,9 +81,7 @@ contains
     integer,    intent(out), allocatable :: start_ids(:)
     integer                              :: i
 
-    if (allocated(start_ids)) then
-      allocate(start_ids(0))
-    end if
+    allocate(start_ids(0))
     ! a node is a valid start node if no nodes would point to it
     ! i.e. if no instances of edges(:) list it as the target, `%right`
     do i = 1, size(nodes) ! these are in lexicographic order
@@ -76,56 +94,98 @@ contains
     end do
   end subroutine
 
-  subroutine Graph_TopologicalSort(edges_in, nodes, start_tree, sorted_ids, is_cyclic)
-    ! use Khan's algorithm as described on Wikipedia
-    ! https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm
-    ! using a sorted tree for S imposes the required lexicographic preference
-    type(Edge), intent(in)               :: edges_in(:)
-    integer,    intent(in)               :: nodes(:)
-    type(Tree),              pointer     :: start_tree, sorted_tree => NULL()
-    integer,    intent(out), allocatable :: sorted_ids(:)
-    logical,    intent(out)              :: is_cyclic
-    type(Edge),              allocatable :: edges(:)
-    integer                              :: n, m, e
-    type(Tree),              pointer     :: removed_node_indices => NULL()
+  subroutine Graph_AddNode(mygraph, myedge)
+    class(Graph), intent(in out) :: mygraph
+    type(Edge),   intent(in)     :: myedge
+    integer                      :: i, left_index, right_index
+    integer,      allocatable    :: left_indices(:), right_indices(:)
 
-    edges = edges_in
-    ! S = Set of all nodes with no incoming edge
-    ! while S is non-empty
-    do while (Tree_CountNodes(start_tree) > 0)
-      ! remove a node n from S
-      call Tree_PopSmallest(start_tree, n)
-      ! add node n to tail of result
-      call Tree_Append(sorted_tree, n)
-      ! for each node m with an edge e from node n to node m (from those still "in" edges)
-      ! TODO: further simplify loop logic
-      ! with an IMPURE ELEMENTAL Tree_Insert a one-liner may be possible
-      next_m: do m = 1, size(nodes)
-        ! skip any `m` which have already been removed from the graph
-        if ( Tree_Contains(removed_node_indices, m) ) cycle next_m
-        do e = 1, size(edges)
-          if ( edges(e) == Edge(n,nodes(m)) ) then
-            ! remove edge e from the graph
-            edges = [edges(:e-1), edges(e+1:)]
-            ! if node m has no other incoming edges
-            if ( any(edges%right == nodes(m)) ) then
-            else
-              ! insert m into S
-              call Tree_Insert(start_tree, nodes(m))
-              ! keep track of all `m` which have been removed from the graph
-              call Tree_Insert(removed_node_indices, m)
-            end if
-            cycle next_m
-          end if
-        end do
-      end do next_m
-      ! repeat until S is empty
+    ! find myedge%left in mygraph%nodes, assumes `mygraph` prepared in advance
+    allocate(left_indices(0))
+    left_indices = pack( [( i, i = 1, size(mygraph%nodes) )], mygraph%nodes == myedge%left )
+    left_index = left_indices(1)
+    ! do the same for myedge%right
+    allocate(right_indices(0))
+    right_indices = pack( [( i, i = 1, size(mygraph%nodes) )], mygraph%nodes == myedge%right)
+    right_index = right_indices(1)
+
+    ! assume no duplicates
+    if ( count( mygraph%lists(left_index)%keys == right_index ) > 0 ) then
+      stop "Logikfehler: Knotenpunkt befindet sich bereits im Graphen."
+    else
+    ! if no, add it
+      mygraph%lists(left_index)%keys = [ mygraph%lists(left_index)%keys, right_index ]
+    end if
+  end subroutine
+
+  subroutine Graph_Create(this, edges, nodes)
+    class(Graph), intent(out) :: this
+    type(Edge),   intent(in)  :: edges(:)
+    integer,      intent(in)  :: nodes(:)
+    integer                   :: i, empty(0)
+
+    this%N = size(nodes)
+    this%nodes = nodes
+    this%lists = [( List(empty), i = 1, size(nodes) )]
+    do i = 1, size(edges)
+      call this%AddNode(edges(i))
     end do
-    ! if graph has edges
-    is_cyclic = (size(edges) > 0)
+  end subroutine
+
+  subroutine Graph_TopologicalSort(this, sorted_ids, is_cyclic)
+    ! use "in-degree" method, assumes no duplicate edges
+    ! https://www.geeksforgeeks.org/topological-sorting-indegree-based-solution/
+    ! using a sorted tree for S imposes the required lexicographic preference
+    class(Graph), intent(in)               :: this
+    integer,      intent(out), allocatable :: sorted_ids(:)
+    logical,      intent(out)              :: is_cyclic
+    type(Tree),                pointer     :: queued_nodes => NULL(), sorted_tree => NULL()
+    integer                                :: i, j, popped, cnt
+    integer,                   allocatable :: in_degree(:)
+
+    ! traverse adjacency lists to fill in-degrees of edges
+    allocate(in_degree(0))
+    in_degree = [( 0, i = 1, this%N )]
+    do i = 1, this%N
+      ! in_degree(j) is how many vertexes point into this vertex
+      do j = 1, size(in_degree)
+        if ( any(this%lists(i)%keys == j) ) then
+          in_degree(j) = in_degree(j) + 1
+        end if
+      end do
+    end do
+
+    ! enqueue all nodes with in-degree 0
+    do i = 1, this%N
+      if (in_degree(i) == 0) then
+        call Tree_Insert(queued_nodes, i)
+      end if
+    end do
+
+    cnt = 0
+    do while (Tree_CountNodes(queued_nodes) > 0)
+      ! pop smallest node from queue and append to final result
+      call Tree_PopSmallest(queued_nodes, popped)
+      call Tree_Append(sorted_tree, this%nodes(popped))
+      ! decrement in-degrees of all nodes pointed to by the popped node
+      do i = 1, size( this%lists(popped)%keys )
+        j = this%lists(popped)%keys(i)
+        in_degree(j) = in_degree(j) - 1
+        ! enqueue all with zero in-degree (no other nodes point to them)
+        if (in_degree(j) == 0) then
+          call Tree_Insert(queued_nodes, j)
+        end if
+      end do
+      cnt = cnt + 1
+    end do
+
+    ! graph is cyclic if some nodes never got queued
+    is_cyclic = (cnt /= this%N)
     ! flatten output
     allocate(sorted_ids(Tree_CountNodes(sorted_tree)))
     sorted_ids(:) = Tree_InOrder(sorted_tree)
+    call Tree_Destroy(queued_nodes)
+    call Tree_Destroy(sorted_tree)
   end subroutine
 
 end module

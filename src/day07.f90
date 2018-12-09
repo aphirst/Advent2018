@@ -36,29 +36,26 @@ contains
   end subroutine
 
   subroutine Problem07(c)
-    integer                 :: c(2)
-    type(Edge), allocatable :: edges(:)
-    integer,    allocatable :: nodes(:), start_ids(:), sorted_ids(:)
-    type(Tree), pointer     :: start_tree => NULL()
-    logical                 :: is_cyclic
+    integer                            :: c(2)
+    type(Edge),            allocatable :: edges(:)
+    integer,               allocatable :: nodes(:), sorted_ids(:)
+    type(Graph)                        :: mygraph
+    logical                            :: is_cyclic
 
     call ReadEdgesNodes(edges, nodes)
+    ! Part 1: "In what order should the steps in your instructions be completed?"
 
-    ! find a list of start nodes with no incoming edges
-    allocate(start_ids(0))
-    call Graph_GetStartIDs(edges, nodes, start_ids)!, start_nodes, other_nodes)
-
-    ! convert to trees
-    call Tree_CreateBalanced(start_tree, start_ids)
-
-    ! run Khan's algorithm, passing a (modifiable) tree containing the start ids
+    ! run Khan's algorithm
+    call mygraph%Create(edges, nodes)
     allocate(sorted_ids(0))
-    call Graph_TopologicalSort(edges, nodes, start_tree, sorted_ids, is_cyclic)
+    call mygraph%TopologicalSort(sorted_ids, is_cyclic)
+    if (is_cyclic) stop "Ergebener Baum enthält Schleifen."
 
-    print "(a,*(a))", "Ergebnis 1: ", achar(sorted_ids)
-    print "(2a)", "Richtig:    ", "BGJCNLQUYIFMOEZTADKSPVXRHW"
+    print "(*(a))", "Ergebnis 1: ", achar(sorted_ids)
+    print "(2a)",   "Richtig:    ", "BGJCNLQUYIFMOEZTADKSPVXRHW"
     call system_clock(c(1))
 
     call system_clock(c(2))
   end subroutine
+
 end module
