@@ -3,3 +3,9 @@ obj/
 input/*.log
 input/day04_nights.txt
 input/*_sorted.txt
+input/*_length.txt
+input/*_barrucadu.txt
+input/*_trivial.txt
+*.dot
+*.out
+*.xml
