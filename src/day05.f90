@@ -17,6 +17,12 @@
 module Day05
   implicit none
 
+  ! TODO: refactor Stack to be similar to Tree
+  ! compute length on-the-fly
+  ! recursive Stack_Destroy
+  ! recursive Stack_InOrder
+  ! recursive Stack_Clone without having to copy out entire contents
+
   type Node
     type(Node), pointer :: next => NULL()
     integer             :: key
@@ -27,6 +33,9 @@ module Day05
     integer             :: num_nodes
   contains
     procedure :: IsEmpty
+    procedure :: Init
+    procedure :: Peek
+    procedure :: Push, Pop
   end type
 
   private
@@ -34,81 +43,92 @@ module Day05
 
 contains
 
-  logical pure function IsEmpty(mystack)
-    class(Stack), intent(in) :: mystack
+  logical pure function IsEmpty(this)
+    class(Stack), intent(in) :: this
 
-    isempty = (mystack%num_nodes == 0)
+    isempty = (this%num_nodes == 0)
   end function
 
   type(Stack) function NewStack()
     newstack = Stack(NULL(), 0)
   end function
 
-  subroutine Init(mystack, key)
+  subroutine Init(this, key)
     ! make sure to only call when stack is not initialised
-    type(Stack), intent(in out) :: mystack
-    integer,     intent(in)     :: key
+    class(Stack), intent(in out) :: this
+    integer,      intent(in)     :: key
 
-    allocate(mystack%head)
-    mystack%head%key = key
-    mystack%head%next => NULL()
-    mystack%num_nodes = 1
+    allocate(this%head)
+    this%head%key = key
+    this%head%next => NULL()
+    this%num_nodes = 1
   end subroutine
 
-  subroutine Push(mystack, key)
-    type(Stack), intent(in out) :: mystack
+  subroutine Push(this, key)
+    class(Stack), intent(in out) :: this
     integer,     intent(in)     :: key
     type(Node),  pointer        :: mynode
 
     ! if stack empty
-    if (mystack%IsEmpty()) then
-      call Init(mystack, key)
+    if (this%IsEmpty()) then
+      call this%Init(key)
     else
       ! use temporary node to "keep" the reference to the list's old head
-      mynode => mystack%head
+      mynode => this%head
       ! clear the old head
-      allocate(mystack%head)
+      allocate(this%head)
       ! place the new value directly into the new head
-      mystack%head%key = key
+      this%head%key = key
       ! stitch the list back together by point to the "kept" reference
-      mystack%head%next => mynode
-      mystack%num_nodes = mystack%num_nodes + 1
+      this%head%next => mynode
+      this%num_nodes = this%num_nodes + 1
     end if
   end subroutine
 
-  subroutine Pop(mystack, key)
+  subroutine Pop(this, key)
     ! make sure to only call when stack is initialised
-    type(Stack), intent(in out)           :: mystack
+    class(Stack), intent(in out)           :: this
     integer,     intent(out)              :: key
     type(Node),                  pointer  :: mynode
 
-    if (mystack%IsEmpty()) then
+    if (this%IsEmpty()) then
       error stop "Stapel ist bereits leer. Logikfehler."
     end if
-    key = mystack%head%key
-    mynode => mystack%head%next
-    deallocate(mystack%head)
-    mystack%head => mynode
-    ! end state, mystack%head points to what used to be mystack%head%next
-    mystack%num_nodes = mystack%num_nodes - 1
+    key = this%head%key
+    mynode => this%head%next
+    deallocate(this%head)
+    this%head => mynode
+    ! end state, this%head points to what used to be this%head%next
+    this%num_nodes = this%num_nodes - 1
   end subroutine
 
-  integer pure function Peek(mystack)
-    type(Stack), intent(in) :: mystack
+  integer pure function Peek(this)
+    class(Stack), intent(in) :: this
 
-    peek = mystack%head%key
+    peek = this%head%key
   end function
 
-  function Traverse(mystack)
+  function InOrder(mystack) result(int_array)
     type(Stack), intent(in)          :: mystack
-    integer                          :: i, traverse(mystack%num_nodes)
+    integer                          :: i, int_array(mystack%num_nodes)
     type(Node),              pointer :: mynode
 
     mynode => mystack%head
     do i = 1, mystack%num_nodes
-      traverse(i) = mynode%key
+      int_array(i) = mynode%key
       mynode => mynode%next
     end do
+  end function
+
+  pure recursive function ReadNodes(mynode) result(myread)
+    type(Node), intent(in)  :: mynode
+    integer,    allocatable :: myread(:)
+
+    if (.not. associated(mynode%next)) then
+      myread = mynode%key
+    else
+      myread = [ mynode%key, ReadNodes(mynode%next) ]
+    end if
   end function
 
   function Clone(mystack)
@@ -116,7 +136,7 @@ contains
     type(Stack)             :: clone
     integer                 :: keys(mystack%num_nodes), i
 
-    keys = Traverse(mystack)
+    keys = InOrder(mystack)
     clone = NewStack()
     do i = 1, size(keys)
       call Push(clone, keys(i))
@@ -133,9 +153,9 @@ contains
   end subroutine
 
   subroutine ReadPolymer(polymer)
-    type(Stack),               intent(out) :: polymer
+    type(Stack),  intent(out)              :: polymer
     integer                                :: unit, iostat, N, i
-    character(:), allocatable              :: polymer_str
+    character(:),              allocatable :: polymer_str
 
     call execute_command_line("rm input/day05_length.txt")
     call execute_command_line("expr `wc -m < input/day05.txt` - `wc -l < input/day05.txt` > input/day05_length.txt")
@@ -199,14 +219,14 @@ contains
 
   function RemoveLetters(polymer, ascii)
     ! remove all instances of the specified ascii codes from the integer input
-    type(Stack), intent(in) :: polymer
-    integer,     intent(in) :: ascii(:)
-    type(Stack)             :: removeletters
-    integer                 :: polymer_int(polymer%num_nodes), i
-    logical                 :: mymask(polymer%num_nodes)
-    integer,    allocatable :: polymer_new(:)
+    type(Stack), intent(in)              :: polymer
+    integer,     intent(in)              :: ascii(:)
+    type(Stack)                          :: removeletters
+    integer                              :: polymer_int(polymer%num_nodes), i
+    logical                              :: mymask(polymer%num_nodes)
+    integer,                 allocatable :: polymer_new(:)
 
-    polymer_int = Traverse(polymer)
+    polymer_int = InOrder(polymer)
     do concurrent (i = 1:size(polymer_int))
       mymask(i) = all(polymer_int(i) /= ascii)
     end do
@@ -220,6 +240,7 @@ contains
 
   subroutine Problem05(c)
     integer,     intent(out) :: c(2)
+    ! TODO: account for the 0 offset via (i+1) in loop instead
     type(Stack)              :: polymer, collapsed, collapsed_new(0:25), polymer_trim(0:25)
     integer                  :: i, sizes(0:25)
 
