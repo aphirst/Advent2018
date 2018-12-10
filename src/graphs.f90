@@ -40,10 +40,10 @@ module Graphs
     integer,    allocatable :: nodes(:)
     type(List), allocatable :: lists(:)
   contains
-    procedure :: TopologicalSort => Graph_TopologicalSort
     procedure :: Create => Graph_Create
     procedure :: AddNode => Graph_AddNode
     ! procedure :: GetNodeIndex
+    procedure :: TopologicalSort => Graph_TopologicalSort
   end type
 
   public
@@ -57,6 +57,7 @@ contains
   end function
 
   function Graph_GetAllIDs(edges) result(ids)
+    ! get them then sorts them
     ! sorting should be a separate "tree sort"
     type(Edge), intent(in)              :: edges(:) ! array prevents type-bound
     integer                             :: i
@@ -106,7 +107,7 @@ contains
     left_index = left_indices(1)
     ! do the same for myedge%right
     allocate(right_indices(0))
-    right_indices = pack( [( i, i = 1, size(mygraph%nodes) )], mygraph%nodes == myedge%right)
+    right_indices = pack( [( i, i = 1, size(mygraph%nodes) )], mygraph%nodes == myedge%right )
     right_index = right_indices(1)
 
     ! assume no duplicates

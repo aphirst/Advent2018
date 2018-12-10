@@ -124,8 +124,8 @@ contains
 
   subroutine Problem03(c)
     integer,     intent(out)              :: c(2)
-    type(Claim),              allocatable :: claims(:), intersections(:)
-    integer                               :: i, j, ans
+    type(Claim),              allocatable :: claims(:)
+    integer                               :: i, j
     integer,                  allocatable :: fabric(:,:)
     logical,                  allocatable :: disqualified(:)
 

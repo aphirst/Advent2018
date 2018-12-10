@@ -83,7 +83,7 @@ contains
     ymax = maxval(mycoords%y,1)
 
     finiteareas = 0
-    is_finite = [( .true., i = 1, size(mycoords) )]
+    is_finite = .true.
     ! process all points in the virtual grid
     do x = xmin, xmax
       do y = ymin, ymax
