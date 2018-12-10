@@ -103,19 +103,18 @@ contains
     ! before [a B c], current element "b", remove "b""
     ! after  [a C d], current element "c"
     class(Ring),  intent(in out)          :: this
-    type(Marble),                 pointer :: temp1 => NULL(), temp2 => NULL(), temp3 => NULL()
+    type(Marble),                 pointer :: temp1 => NULL(), temp2 => NULL()
 
     if (.not. associated(this%current)) stop "Logikfehler: Keine Murmel zu entfernen."
 
     temp1 => this%current%prev
-    temp2 => this%current
-    temp3 => this%current%next
+    temp2 => this%current%next
 
-    temp1%next => temp3
-    temp3%prev => temp1
+    temp1%next => temp2
+    temp2%prev => temp1
 
     deallocate(this%current)
-    this%current => temp3
+    this%current => temp2
 
     this%num_marbles = this%num_marbles - 1
   end subroutine
