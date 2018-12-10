@@ -27,7 +27,7 @@ program Advent2018
 
   implicit none
 
-  integer :: i, c(3), cr, cm
+  integer :: i, c(3), cr, cm, t
   real    :: rate
 
   print *, "Grüß Gott!"
@@ -36,6 +36,7 @@ program Advent2018
   call system_clock(count_rate=cr)
   call system_clock(count_max=cm)
   rate = real(cr)
+  t = 0
 
   do i = 1, 25
     call system_clock(c(1))
@@ -73,8 +74,10 @@ program Advent2018
       cycle
     end select
     print "(3(a,f0.3))", "Laufzeiten: ", (c(2)-c(1))/rate, " ", (c(3)-c(2))/rate, " ", (c(3)-c(1))/rate
+    t = t + (c(3) - c(1)) ! ignore destructor time from total time
     print *, ""
   end do
+  print "(a,f0.3)", "Gesamte Laufzeit (ohne Destruktoren): ", t/rate
 
   print *, "Frohe Weihnachten! Tschüss!"
 
