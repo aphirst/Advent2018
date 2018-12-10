@@ -9,3 +9,5 @@ input/*_trivial.txt
 *.dot
 *.out
 *.xml
+*.depend
+*.layout
