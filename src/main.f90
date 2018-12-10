@@ -23,6 +23,7 @@ program Advent2018
   use Day06
   use Day07
   use Day09
+  use Day10
 
   implicit none
 
@@ -65,6 +66,9 @@ program Advent2018
     case (9)
       print *, "9. Tag:"
       call Problem09(c(2:3))
+    case (10)
+      print *, "10. Tag:"
+      call Problem10(c(2:3))
     case default
       cycle
     end select
