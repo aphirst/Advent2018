@@ -40,6 +40,9 @@ module Day09
     procedure :: Destroy    => Ring_Destroy
   end type
 
+  private
+  public :: Problem09
+
 contains
 
   subroutine Ring_Create(this)

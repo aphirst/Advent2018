@@ -63,7 +63,7 @@ program Advent2018
     case (8)
       cycle
     case (9)
-      print *, "7. Tag:"
+      print *, "9. Tag:"
       call Problem09(c(2:3))
     case default
       cycle
