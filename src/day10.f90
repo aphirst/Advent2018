@@ -24,7 +24,7 @@ module Day10
   type Star
     integer :: x, y, dx, dy
   contains
-    procedure :: AfterT         => Star_AfterT
+    procedure :: Propagate      => Star_Propagate
     procedure :: SameTrajectory => Star_SameTrajectory
   end type
 
@@ -48,14 +48,14 @@ module Day10
 
 contains
 
-  type(Star) pure function Star_AfterT(this, t) result(aftert)
+  type(Star) pure function Star_Propagate(this, t) result(mystar)
     class(Star), intent(in) :: this
     integer,     intent(in) :: t
 
-    aftert%x = this%x + t * this%dx
-    aftert%y = this%y + t * this%dy
-    aftert%dx = this%dx
-    aftert%dy = this%dy
+    mystar%x = this%x + t * this%dx
+    mystar%y = this%y + t * this%dy
+    mystar%dx = this%dx
+    mystar%dy = this%dy
   end function
 
   logical pure function Star_SameTrajectory(this, mystar) result(isc)
@@ -92,9 +92,8 @@ contains
     this%num_stars = num_stars
   end subroutine
 
-  function Field_BoundingBox(this) result(bb)
+  type(BBox) pure function Field_BoundingBox(this) result(bb)
     class(Field), intent(in) :: this
-    type(BBox)               :: bb
 
     bb%x = [ minval(this%stars%x), maxval(this%stars%x) ]
     bb%y = [ minval(this%stars%y), maxval(this%stars%y) ]
@@ -110,14 +109,14 @@ contains
 
     allocate(aftert%stars(this%num_stars))
     do i = 1, this%num_stars
-      aftert%stars(i) = this%stars(i)%AfterT(t)
+      aftert%stars(i) = this%stars(i)%Propagate(t)
     end do
     aftert%num_stars = this%num_stars
   end function
 
-  pure function Field_Predict(this) result(t)
+  integer pure function Field_Predict(this) result(t)
     class(Field), intent(in) :: this
-    integer                  :: t, i, j
+    integer                  :: i, j
     type(Star)               :: pi, pj
 
     if (this%num_stars < 2) error stop "Logikfehler: Mehrere Sterne benötigt um Schnittpunkte zu berechnen."
