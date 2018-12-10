@@ -19,5 +19,5 @@ Compiled using `GNU Fortran (GCC) 8.2.1 20181127`.
 <tr><th>08</th><td>-      </td><td> -     </td><td> -     </td><td> -     </td><td> -     </td><td> -     </td></tr>
 <tr><th>09</th><td> -     </td><td> -     </td><td>0.003 s</td><td>0.368 s</td><td>0.007 s</td><td>0.868 s</td></tr>
 <tr></tr>
-<tr><th>Total</th><th colspan=2 align="center">0.738 s</th><th colspan=2>0.173 s</th><th colspan=2>2.144 s</th></tr>
+<tr><th>Total</th><th colspan=2 align="center"> - </th><th colspan=2>0.738 s</th><th colspan=2>2.144 s</th></tr>
 </table>
