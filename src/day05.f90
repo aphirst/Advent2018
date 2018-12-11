@@ -65,9 +65,9 @@ contains
   end subroutine
 
   subroutine Push(this, key)
-    class(Stack), intent(in out) :: this
-    integer,     intent(in)     :: key
-    type(Node),  pointer        :: mynode
+    class(Stack), intent(in out)          :: this
+    integer,      intent(in)              :: key
+    type(Node),                   pointer :: mynode
 
     ! if stack empty
     if (this%IsEmpty()) then
@@ -88,8 +88,8 @@ contains
   subroutine Pop(this, key)
     ! make sure to only call when stack is initialised
     class(Stack), intent(in out)           :: this
-    integer,     intent(out)              :: key
-    type(Node),                  pointer  :: mynode
+    integer,     intent(out)               :: key
+    type(Node),                   pointer  :: mynode
 
     if (this%IsEmpty()) then
       error stop "Stapel ist bereits leer. Logikfehler."
@@ -121,8 +121,8 @@ contains
   end function
 
   pure recursive function ReadNodes(mynode) result(myread)
-    type(Node), intent(in)  :: mynode
-    integer,    allocatable :: myread(:)
+    type(Node), intent(in)              :: mynode
+    integer,                allocatable :: myread(:)
 
     if (.not. associated(mynode%next)) then
       myread = mynode%key
