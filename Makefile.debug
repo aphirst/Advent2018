@@ -14,6 +14,7 @@ day06.f90 \
 day07.f90 \
 day09.f90 \
 day10.f90 \
+day11.f90 \
 main.f90
 
 OBJS_f90d1 = \
@@ -28,6 +29,7 @@ day06.o \
 day07.o \
 day09.o \
 day10.o \
+day11.o \
 main.o
 
 SRC_DIR_f90d1 = src/
@@ -86,6 +88,8 @@ day09.o: \
     day09.f90
 day10.o: \
     day10.f90
+day11.o: \
+    day11.f90
 main.o: \
     main.f90 \
     day01.o \
@@ -96,5 +100,6 @@ main.o: \
     day06.o \
     day07.o \
     day09.o \
-    day10.o
+    day10.o \
+    day11.o
 
