@@ -17,11 +17,11 @@ Compiled using `GNU Fortran (GCC) 8.2.1 20181127`.
 <tr><th>06</th><td>0.020 s</td><td>0.003 s</td><td>0.023 s</td><td>0.002 s</td><td>0.066 s</td><td>0.018 s</td></tr>
 <tr><th>07</th><td>0.012 s</td><td> -     </td><td>0.011 s</td><td> -     </td><td>0.032 s</td><td> -     </td></tr>
 <tr><th>08</th><td>-      </td><td> -     </td><td> -     </td><td> -     </td><td> -     </td><td> -     </td></tr>
-<tr><th>09</th><td>0.003 s</td><td>0.285 s</td><td>0.003 s</td><td>0.357 s</td><td>0.007 s</td><td>0.854 s</td></tr>
+<tr><th>09</th><td>0.002 s</td><td>0.277 s</td><td>0.003 s</td><td>0.366 s</td><td>0.007 s</td><td>0.830 s</td></tr>
 <tr><th>10</th><td>0.027 s</td><td>0.000 s</td><td>0.023 s</td><td>0.000 s</td><td>0.069 s</td><td>0.000 s</td></tr>
 <tr><th>11</th><td>0.003 s</td><td>0.038 s</td><td>0.003 s</td><td>0.043 s</td><td>0.010 s</td><td>0.088 s</td></tr>
 <tr></tr>
-<tr><th>Total</th><th colspan=2 align="center">0.496 s</th><th colspan=2>0.598 s</th><th colspan=2>1.436 s</th></tr>
+<tr><th>Total</th><th colspan=2 align="center">0.476 s</th><th colspan=2>0.576 s</th><th colspan=2>1.411 s</th></tr>
 </table>
 
 Note: Final routine time is taken *before* any explicit destructor calls, some of which take upwards of 0.100s to complete.

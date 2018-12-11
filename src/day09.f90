@@ -172,33 +172,33 @@ contains
 
   subroutine Problem09(c)
     integer,    intent(out) :: c(2)
-    type(Ring)              :: myring
+    type(Ring)              :: game1, game2
     integer                 :: i
 
     ! Part 1: "What is the winning Elf's score?"
-    call myring%Create()
+    call game1%Create()
     do i = 1, last_marble
-      call myring%Play(i)
-      call myring%NextPlayer()
+      call game1%Play(i)
+      call game1%NextPlayer()
     end do
 
-    print "(a,i0)", "Ergebnis 1: ", maxval(myring%score)
+    print "(a,i0)", "Ergebnis 1: ", maxval(game1%score)
     print "(a,i0)", "Richtig:    ", 439341
     call system_clock(c(1))
 
     ! Part 2: "What would the new winning Elf's score be if the number of the last marble were 100 times larger?"
-    call myring%Destroy()
-    call myring%Create()
+    call game2%Create()
     do i = 1, 100*last_marble
-      call myring%Play(i)
-      call myring%NextPlayer()
+      call game2%Play(i)
+      call game2%NextPlayer()
     end do
 
-    print "(a,i0)", "Ergebnis 2: ", maxval(myring%score)
+    print "(a,i0)", "Ergebnis 2: ", maxval(game2%score)
     print "(a,i0)", "Richtig:    ", 3566801385_int64
     call system_clock(c(2))
 
-    call myring%Destroy()
+    call game1%Destroy()
+    call game2%Destroy()
   end subroutine
 
 end module
