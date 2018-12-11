@@ -11,3 +11,4 @@ input/*_trivial.txt
 *.xml
 *.depend
 *.layout
+callgrind.out.*
