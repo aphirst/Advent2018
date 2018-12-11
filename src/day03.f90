@@ -20,7 +20,7 @@ module Day03
   type Claim
     integer :: x, y, width, height
   contains
-    procedure :: x2, y2, Area
+    procedure :: x2, y2
     procedure :: IsOverlap
   end type
 
