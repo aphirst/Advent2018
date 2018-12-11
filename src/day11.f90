@@ -65,18 +65,21 @@ contains
   end function
 
   pure integer function EvaluateSum(sat, i1, i2, j1, j2) result(mysum)
-    ! uses a pre-evaluated summed area table to compute the sum for the INCLUSIVE range [i1:i2, j1,j2]
+    ! uses a pre-evaluated summed area table to compute the sum for the INCLUSIVE range [i1:i2, j1:j2]
     ! some effort was required to work out the correct offsets, as most implementations seem implicitly right-EXCLUSIVE
     integer, intent(in) :: sat(:,:), i1, i2, j1, j2
+    integer             :: Ni, Nj
 
+    Ni = size(sat,1)
+    Nj = size(sat,2)
     if ( (i1-1 < 1) .and. (j1-1 < 1) ) then
-      mysum = sat(min(i2,N),min(j2,N))
+      mysum = sat(min(i2,Ni),min(j2,Nj))
     else if (i1-1 < 1) then
-      mysum = sat(min(i2,N),min(j2,N)) - sat(min(i2,N),j1-1)
+      mysum = sat(min(i2,Ni),min(j2,Nj)) - sat(min(i2,Ni),j1-1)
     else if (j1-1 < 1) then
-      mysum = sat(min(i2,N),min(j2,N)) - sat(i1-1,min(j2,N))
+      mysum = sat(min(i2,Ni),min(j2,Nj)) - sat(i1-1,min(j2,Nj))
     else
-      mysum = sat(i1-1,j1-1) + sat(min(i2,N),min(j2,N)) - sat(i1-1,min(j2,N)) - sat(min(i2,N),j1-1)
+      mysum = sat(i1-1,j1-1) + sat(min(i2,Ni),min(j2,Nj)) - sat(i1-1,min(j2,Nj)) - sat(min(i2,Ni),j1-1)
     end if
   end function
 
