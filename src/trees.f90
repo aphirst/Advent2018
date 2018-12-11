@@ -151,8 +151,8 @@ contains
   end subroutine
 
   recursive subroutine Tree_Append(this, key)
-    type(Tree), pointer :: this
-    integer, intent(in) :: key
+    type(Tree),             pointer :: this
+    integer,    intent(in)          :: key
 
     if (associated(this)) then
       call Tree_Append(this%right, key)

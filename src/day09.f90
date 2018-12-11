@@ -159,8 +159,8 @@ contains
 
   subroutine Ring_Destroy(this)
     ! [... a b c ... ]
-    class(Ring),  intent(in out) :: this
-    integer                      :: i
+    class(Ring), intent(in out) :: this
+    integer                     :: i
 
     do i = 1, this%num_marbles
       call this%Remove()

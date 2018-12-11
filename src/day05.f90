@@ -88,7 +88,7 @@ contains
   subroutine Pop(this, key)
     ! make sure to only call when stack is initialised
     class(Stack), intent(in out)           :: this
-    integer,     intent(out)               :: key
+    integer,      intent(out)              :: key
     type(Node),                   pointer  :: mynode
 
     if (this%IsEmpty()) then

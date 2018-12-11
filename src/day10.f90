@@ -66,9 +66,9 @@ contains
   end function
 
   subroutine Field_ReadStars(this)
-    class(Field), intent(out) :: this
-    integer                   :: unit, iostat, num_stars, i
-    character(50)             :: str
+    class(Field),  intent(out) :: this
+    integer                    :: unit, iostat, num_stars, i
+    character(50)              :: str
 
     call execute_command_line("rm input/day10_length.txt")
     call execute_command_line("expr `wc -l < input/day10.txt` > input/day10_length.txt")

@@ -127,8 +127,8 @@ contains
   end function
 
   subroutine Problem06(c)
-    integer, intent(out) :: c(2)
-    type(Coord), allocatable :: mycoords(:)
+    integer,     intent(out)              :: c(2)
+    type(Coord),              allocatable :: mycoords(:)
 
     call ReadCoords(mycoords)
 

@@ -26,7 +26,7 @@ contains
     open(newunit=unit, file="input/day07.txt", iostat=iostat, status="old")
     if (iostat /= 0) error stop "Datenfehler."
     do i = 1, num_edges
-      read(unit, "(a)", iostat=iostat) str
+      read(unit, "(a)") str
       edges(i)%left = iachar(str(6:6))
       edges(i)%right = iachar(str(37:37))
     end do
@@ -36,11 +36,13 @@ contains
   end subroutine
 
   subroutine Problem07(c)
-    integer                            :: c(2)
-    type(Edge),            allocatable :: edges(:)
-    integer,               allocatable :: nodes(:), sorted_ids(:)
-    type(Graph)                        :: mygraph
-    logical                            :: is_cyclic
+    integer                             :: c(2)
+    type(Edge),             allocatable :: edges(:)
+    integer,                allocatable :: nodes(:), sorted_ids(:)
+    type(Graph)                         :: mygraph
+    logical                             :: is_cyclic
+    integer,     parameter              :: num_workers = 5, delay = 60
+    integer                             :: timestamp
 
     call ReadEdgesNodes(edges, nodes)
     ! Part 1: "In what order should the steps in your instructions be completed?"
