@@ -17,10 +17,16 @@
 module Day03
   implicit none
 
+  ! "Each claim's rectangle is defined as follows:
+  ! * The number of inches between the left edge of the fabric and the left edge of the rectangle.
+  ! * The number of inches between the top edge of the fabric and the top edge of the rectangle.
+  ! * The width of the rectangle in inches.
+  ! * The height of the rectangle in inches."
+  !
+  ! care must be taken to avoid off-by-one errors
   type Claim
-    integer :: x, y, width, height
+    integer :: x1, y1, width, height, x2, y2
   contains
-    procedure :: x2, y2
     procedure :: IsOverlap
   end type
 
@@ -32,12 +38,12 @@ module Day03
 
 contains
 
-  pure function ParseClaim(string)
+  pure function ParseClaim(string) result(myclaim)
     ! each line is defined like `#62 @ 272,752: 28x14`
     ! index, (x,y), (width, height)
     ! there are 4 significant breaks, "@", "," ":" and "x""
     character(30), intent(in) :: string
-    type(Claim)               :: parseclaim
+    type(Claim)               :: myclaim
     integer                   :: breaks(4)
     character(4)              :: x, y, width, height
 
@@ -49,12 +55,14 @@ contains
     x = string(breaks(1)+1:breaks(2)-1)
     y = string(breaks(2)+1:breaks(3)-1)
     width = string(breaks(3)+1:breaks(4)-1)
-    height = string(breaks(4)+1:len(string))
+    height = string(breaks(4)+1:len( trim(string) ))
 
-    read(x,*) parseclaim%x
-    read(y,*) parseclaim%y
-    read(width,*) parseclaim%width
-    read(height,*) parseclaim%height
+    read(x,*) myclaim%x1
+    read(y,*) myclaim%y1
+    read(width,*) myclaim%width
+    read(height,*) myclaim%height
+    myclaim%x2 = myclaim%x1 + myclaim%width - 1
+    myclaim%y2 = myclaim%y1 + myclaim%height - 1
   end function
 
   subroutine ReadClaims(claims)
@@ -79,30 +87,18 @@ contains
     close(unit)
   end subroutine
 
-  integer pure function x2(myclaim)
-    class(Claim), intent(in) :: myclaim
-
-    x2 = myclaim%x + myclaim%width
-  end function
-
-  integer pure function y2(myclaim)
-    class(Claim), intent(in) :: myclaim
-
-    y2 = myclaim%y + myclaim%height
-  end function
-
   logical pure function IsOverlap(claim1, claim2)
     ! compare claims to see whether their regions overlap
     class(Claim), intent(in) :: claim1, claim2
 
     isoverlap = .false.
-    if (claim1%x2() <= claim2%x) then
+    if (claim1%x2 < claim2%x1) then
       return
-    else if (claim1%x >= claim2%x2()) then
+    else if (claim1%x1 > claim2%x2) then
       return
-    else if (claim1%y2() <= claim2%y) then
+    else if (claim1%y2 < claim2%y1) then
       return
-    else if (claim1%y >= claim2%y2()) then
+    else if (claim1%y1 > claim2%y2) then
       return
     else
       isoverlap = .true.
@@ -121,8 +117,8 @@ contains
     fabric(:,:) = 0
 
     do i = 1, size(claims)
-      associate(x => claims(i)%x, y => claims(i)%y, width => claims(i)%width, height => claims(i)%height)
-        fabric(x:x+width-1,y:y+height-1) = fabric(x:x+width-1,y:y+height-1) + 1
+      associate(x1 => claims(i)%x1, y1 => claims(i)%y1, x2 => claims(i)%x2, y2 => claims(i)%y2)
+        fabric(x1:x2,y1:y2) = fabric(x1:x2,y1:y2) + 1
       end associate
     end do
   end subroutine
