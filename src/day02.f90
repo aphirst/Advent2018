@@ -30,7 +30,7 @@ contains
     allocate(strings(0))
 
     open(newunit=unit, file="input/day02.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
+    if (iostat /= 0) error stop "Datenfehler."
     read(unit, *, iostat=iostat) stringtemp
     do while (iostat == 0)
       strings = [strings, stringtemp]

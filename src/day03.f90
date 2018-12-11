@@ -65,7 +65,7 @@ contains
     allocate(claims(0))
 
     open(newunit=unit, file="input/day03.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
+    if (iostat /= 0) error stop "Datenfehler."
     read(unit, "(a30)", iostat=iostat) string
     do while (iostat == 0)
       claims = [claims, ParseClaim(string)]

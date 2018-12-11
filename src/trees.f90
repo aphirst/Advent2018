@@ -30,7 +30,7 @@ contains
     type(Tree),             pointer :: this
     integer,    intent(in)          :: key
 
-    if (associated(this)) stop "Logikfehler: Baum ist bereits zugeordnet."
+    if (associated(this)) error stop "Logikfehler: Baum ist bereits zugeordnet."
     allocate(this)
     this%left => NULL()
     this%right => NULL()
@@ -135,7 +135,7 @@ contains
     type(Tree),              pointer :: this, temp
     integer,    intent(out)          :: key
 
-    if (.not. associated(this)) stop "Logikfehler: Baum ist bereits leer."
+    if (.not. associated(this)) error stop "Logikfehler: Baum ist bereits leer."
     if (associated(this%left)) then
       call Tree_PopSmallest(this%left, key)
     else

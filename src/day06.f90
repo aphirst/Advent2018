@@ -36,13 +36,13 @@ contains
     call execute_command_line("rm input/day06_length.txt")
     call execute_command_line("expr `wc -l < input/day06.txt` > input/day06_length.txt")
     open(newunit=unit, file="input/day06_length.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
+    if (iostat /= 0) error stop "Datenfehler."
     read(unit,*) N
     close(unit)
     allocate(mycoords(N))
 
     open(newunit=unit, file="input/day06.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
+    if (iostat /= 0) error stop "Datenfehler."
     do i = 1, N
       read(unit,*) mycoords(i)
     end do

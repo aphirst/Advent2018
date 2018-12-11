@@ -160,13 +160,13 @@ contains
     call execute_command_line("rm input/day05_length.txt")
     call execute_command_line("expr `wc -m < input/day05.txt` - `wc -l < input/day05.txt` > input/day05_length.txt")
     open(newunit=unit, file="input/day05_length.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
+    if (iostat /= 0) error stop "Datenfehler."
     read(unit,*) N
     close(unit)
     allocate(character(len=N) :: polymer_str)
 
     open(newunit=unit, file="input/day05.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
+    if (iostat /= 0) error stop "Datenfehler."
     read(unit,"(a)") polymer_str
     close(unit)
 

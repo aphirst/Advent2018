@@ -73,13 +73,13 @@ contains
     call execute_command_line("rm input/day10_length.txt")
     call execute_command_line("expr `wc -l < input/day10.txt` > input/day10_length.txt")
     open(newunit=unit, file="input/day10_length.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
+    if (iostat /= 0) error stop "Datenfehler."
     read(unit,*) num_stars
     close(unit)
     allocate(this%stars(num_stars))
 
     open(newunit=unit, file="input/day10.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
+    if (iostat /= 0) error stop "Datenfehler."
     do i = 1, num_stars
       read(unit, "(a)", iostat=iostat) str
       read(str(11:16), *) this%stars(i)%x

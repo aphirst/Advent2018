@@ -39,7 +39,7 @@ contains
     allocate(diffs(0))
 
     open(newunit=unit, file="input/day01.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
+    if (iostat /= 0) error stop "Datenfehler."
     read(unit, *, iostat=iostat) nextint
     do while (iostat == 0)
       diffs = [ diffs, nextint ]

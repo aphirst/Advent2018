@@ -40,7 +40,7 @@ contains
     call execute_command_line("rm input/day04_nights.txt")
     call execute_command_line("fgrep -o '#' input/day04.txt | wc -l > input/day04_nights.txt")
     open(newunit=unit, file="input/day04_nights.txt", iostat=iostat, status="old")
-    if (iostat /= 0) stop "Datenfehler."
+    if (iostat /= 0) error stop "Datenfehler."
     read(unit,*) N
     close(unit)
     allocate(nights(N))
@@ -73,7 +73,7 @@ contains
             ! wake from here
             nights(i)%is_asleep(minute:) = .false.
           else
-            stop "Unerwartetes Ereignis."
+            error stop "Unerwartetes Ereignis."
           end if
         end if
       end do inner

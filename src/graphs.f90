@@ -112,7 +112,7 @@ contains
 
     ! assume no duplicates
     if ( count( mygraph%lists(left_index)%keys == right_index ) > 0 ) then
-      stop "Logikfehler: Knotenpunkt befindet sich bereits im Graphen."
+      error stop "Logikfehler: Knotenpunkt befindet sich bereits im Graphen."
     else
     ! if no, add it
       mygraph%lists(left_index)%keys = [ mygraph%lists(left_index)%keys, right_index ]

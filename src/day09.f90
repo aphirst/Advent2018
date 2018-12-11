@@ -105,7 +105,7 @@ contains
     class(Ring),  intent(in out)          :: this
     type(Marble),                 pointer :: temp1 => NULL(), temp2 => NULL()
 
-    if (.not. associated(this%current)) stop "Logikfehler: Keine Murmel zu entfernen."
+    if (.not. associated(this%current)) error stop "Logikfehler: Keine Murmel zu entfernen."
 
     temp1 => this%current%prev
     temp2 => this%current%next
