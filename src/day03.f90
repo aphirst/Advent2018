@@ -58,18 +58,23 @@ contains
   end function
 
   subroutine ReadClaims(claims)
-    type(Claim), intent(out), allocatable :: claims(:)
-    integer                               :: unit, iostat
-    character(30)                         :: string
+    type(Claim),   intent(out), allocatable :: claims(:)
+    integer                                 :: unit, iostat, num_claims, i
+    character(30)                           :: string
 
-    allocate(claims(0))
+    call execute_command_line("rm input/day03_length.txt")
+    call execute_command_line("expr `wc -l < input/day03.txt` > input/day03_length.txt")
+    open(newunit=unit, file="input/day03_length.txt", iostat=iostat, status="old")
+    if (iostat /= 0) error stop "Datenfehler."
+    read(unit,*) num_claims
+    close(unit)
+    allocate(claims(num_claims))
 
     open(newunit=unit, file="input/day03.txt", iostat=iostat, status="old")
     if (iostat /= 0) error stop "Datenfehler."
-    read(unit, "(a30)", iostat=iostat) string
-    do while (iostat == 0)
-      claims = [claims, ParseClaim(string)]
-      read(unit, "(a30)", iostat=iostat) string
+    do i = 1, num_claims
+      read(unit, "(a30)") string
+      claims(i) = ParseClaim(string)
     end do
     close(unit)
   end subroutine

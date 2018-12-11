@@ -24,17 +24,20 @@ contains
 
   subroutine ReadStrings(strings)
     character(26), allocatable :: strings(:)
-    integer                    :: unit, iostat
-    character(26)              :: stringtemp
+    integer                    :: unit, iostat, num_strings, i
 
-    allocate(strings(0))
+    call execute_command_line("rm input/day02_length.txt")
+    call execute_command_line("expr `wc -l < input/day02.txt` > input/day02_length.txt")
+    open(newunit=unit, file="input/day02_length.txt", iostat=iostat, status="old")
+    if (iostat /= 0) error stop "Datenfehler."
+    read(unit,*) num_strings
+    close(unit)
+    allocate(strings(num_strings))
 
     open(newunit=unit, file="input/day02.txt", iostat=iostat, status="old")
     if (iostat /= 0) error stop "Datenfehler."
-    read(unit, *, iostat=iostat) stringtemp
-    do while (iostat == 0)
-      strings = [strings, stringtemp]
-      read(unit, *, iostat=iostat) stringtemp
+    do i = 1, num_strings
+      read(unit, *) strings(i)
     end do
     close(unit)
   end subroutine

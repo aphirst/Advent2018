@@ -33,17 +33,21 @@ contains
 
   subroutine ReadDiffs(diffs)
     integer              :: unit, iostat
-    integer              :: nextint
+    integer              :: num_diffs, i
     integer, allocatable :: diffs(:)
 
-    allocate(diffs(0))
+    call execute_command_line("rm input/day01_length.txt")
+    call execute_command_line("expr `wc -l < input/day01.txt` > input/day01_length.txt")
+    open(newunit=unit, file="input/day01_length.txt", iostat=iostat, status="old")
+    if (iostat /= 0) error stop "Datenfehler."
+    read(unit,*) num_diffs
+    close(unit)
+    allocate(diffs(num_diffs))
 
     open(newunit=unit, file="input/day01.txt", iostat=iostat, status="old")
     if (iostat /= 0) error stop "Datenfehler."
-    read(unit, *, iostat=iostat) nextint
-    do while (iostat == 0)
-      diffs = [ diffs, nextint ]
-      read(unit, *, iostat=iostat) nextint
+    do i = 1, num_diffs
+      read(unit, *) diffs(i)
     end do
     close(unit)
   end subroutine
