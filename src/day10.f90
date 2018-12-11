@@ -24,7 +24,7 @@ module Day10
   type Star
     integer :: x, y, dx, dy
   contains
-    procedure :: Propagate      => Star_Propagate
+    procedure :: Propagated     => Star_Propagated
     procedure :: SameTrajectory => Star_SameTrajectory
   end type
 
@@ -38,7 +38,7 @@ module Day10
   contains
     procedure :: ReadStars   => Field_ReadStars
     procedure :: BoundingBox => Field_BoundingBox
-    procedure :: Propagate   => Field_Propagate
+    procedure :: Propagated  => Field_Propagated
     procedure :: Plot        => Field_Plot
     procedure :: Predict     => Field_Predict
   end type
@@ -48,7 +48,7 @@ module Day10
 
 contains
 
-  type(Star) pure function Star_Propagate(this, t) result(mystar)
+  type(Star) pure function Star_Propagated(this, t) result(mystar)
     class(Star), intent(in) :: this
     integer,     intent(in) :: t
 
@@ -101,7 +101,7 @@ contains
     bb%height = bb%y(2) - bb%y(1) + 1
   end function
 
-  type(Field) pure function Field_Propagate(this, t) result(aftert)
+  type(Field) pure function Field_Propagated(this, t) result(aftert)
     ! returns a new field propagated t seconds
     class(Field), intent(in) :: this
     integer,      intent(in) :: t
@@ -109,7 +109,7 @@ contains
 
     allocate(aftert%stars(this%num_stars))
     do i = 1, this%num_stars
-      aftert%stars(i) = this%stars(i)%Propagate(t)
+      aftert%stars(i) = this%stars(i)%Propagated(t)
     end do
     aftert%num_stars = this%num_stars
   end function
@@ -151,10 +151,9 @@ contains
     type(BBox)                            :: bb
     integer                               :: i, x, y
 
-    this_t = this%Propagate(t)
+    this_t = this%Propagated(t)
     bb = this_t%BoundingBox()
-    allocate( character(len=bb%width+1) :: line(bb%y(1):bb%y(2)) )
-    line = repeat(" ",bb%width+1)
+    allocate( line(bb%y(1):bb%y(2)), source = repeat(" ",bb%width+1) )
     do i = 1, this%num_stars ! for each star
       y = this_t%stars(i)%y
       x = this_t%stars(i)%x - bb%x(1) + 1
@@ -187,7 +186,7 @@ contains
     ! both stars at minimum speed (1)
     ! intersection between trajectories either occurs in N steps or occurred N steps ago
     ! (depends on whether %x or %y branch was used for intersection estimate)
-    bb1 = Field_BoundingBox(myfield%Propagate(t1))
+    bb1 = Field_BoundingBox(myfield%Propagated(t1))
     tleft = t1 - max(bb1%height, bb1%width)
     tright = t1 + max(bb1%height, bb1%width)
     ! in hindsight, solutions have bounding box height 9, so could hardcode +/- 9
@@ -199,8 +198,8 @@ contains
     iter = 0
     do while (t1 < t2)
       ! start t at golden ratio through [tleft, tright]
-      bb1 = Field_BoundingBox(myfield%Propagate(t1))
-      bb2 = Field_BoundingBox(myfield%Propagate(t2))
+      bb1 = Field_BoundingBox(myfield%Propagated(t1))
+      bb2 = Field_BoundingBox(myfield%Propagated(t2))
       if (bb1%width > bb2%width) then
         tleft = t1
         t1 = t2
