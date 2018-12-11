@@ -7,7 +7,7 @@ Written in [Code::Blocks for Fortran](http://http://cbfortran.sourceforge.net/).
 Compiled using `GNU Fortran (GCC) 8.2.1 20181127`.
 
 <table>
-<tr><th>Problem</th><th colspan=2>ThinkPad T430<br>i7-3520M CPU @ 2.90GHz</th><th colspan=2>ThinkPad X230<br>i5-3320M CPU @ 2.60GHz</th><th colspan=2>ODROID-XU4<br>ARM Cortex-A7 @ 2.00GHz</th></tr>
+<tr><th>Problem</th><th colspan=2>ThinkPad T430<br>i7-3520M CPU @ 2.90GHz</th><th colspan=2>ThinkPad X230<br>i5-3320M CPU @ 2.60GHz</th><th colspan=2>ODROID-XU4 (big.LITTLE)<br>ARM Cortex-A15 @ 2.10GHz<br>ARM Cortex-A7 @ 1.50GHz</th></tr>
 <tr></tr>
 <tr><th>01</th><td>0.003 s</td><td>0.008 s</td><td>0.001 s</td><td>0.009 s</td><td>0.004 s</td><td>0.016 s</td></tr>
 <tr><th>02</th><td>0.000 s</td><td>0.004 s</td><td>0.000 s</td><td>0.005 s</td><td>0.003 s</td><td>0.009 s</td></tr>
