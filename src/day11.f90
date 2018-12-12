@@ -91,8 +91,11 @@ contains
   end function
 
   subroutine Problem11(c)
-    integer, intent(out) :: c(2)
+    integer, intent(out) :: c(3)
     integer              :: i, j, k, cells(N,N), sat(N,N), power(N,N), best_power, coord(2), best_coord(2), best_k
+
+    ! no input file for this problem
+    call system_clock(c(1))
 
     cells = reshape( [( [( Fuel(i, j, serial), i=1,N )], j=1,N )], [N,N] )
 
@@ -107,7 +110,7 @@ contains
       if (k == 3) then
         print "(2(a,i0))", "Ergebnis 1: ", coord(1), ",", coord(2)
         print "(2(a,i0))", "Richtig:    ", 243, ",", 72
-        call system_clock(c(1))
+        call system_clock(c(2))
       end if
       if (power(coord(1), coord(2)) > best_power) then
         best_coord = coord
@@ -119,7 +122,7 @@ contains
     ! Part 2: "What is the X,Y,size identifier of the square with the largest total power?"
     print "(3(a,i0))", "Ergebnis 2: ", best_coord(1), ",", best_coord(2), ",", best_k
     print "(3(a,i0))", "Richtig:    ", 229, ",", 192, ",", 11
-    call system_clock(c(2))
+    call system_clock(c(3))
   end subroutine
 
 end module

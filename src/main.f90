@@ -28,7 +28,7 @@ program Advent2018
 
   implicit none
 
-  integer :: i, c(3), cr, cm, t
+  integer :: i, c(4), cr, cm, t
   real    :: rate
 
   print *, "Grüß Gott!"
@@ -44,44 +44,47 @@ program Advent2018
     select case (i)
     case (1)
       print *, "1. Tag:"
-      call Problem01(c(2:3))
+      call Problem01(c(2:4))
     case (2)
       print *, "2. Tag:"
-      call Problem02(c(2:3))
+      call Problem02(c(2:4))
     case (3)
       print *, "3. Tag:"
-      call Problem03(c(2:3))
+      call Problem03(c(2:4))
     case (4)
       print *, "4. Tag:"
-      call Problem04(c(2:3))
+      call Problem04(c(2:4))
     case (5)
       print *, "5. Tag:"
-      call Problem05(c(2:3))
+      call Problem05(c(2:4))
     case (6)
       print *, "6. Tag:"
-      call Problem06(c(2:3))
+      call Problem06(c(2:4))
     case (7)
       print *, "7. Tag:"
-      call Problem07(c(2:3))
+      call Problem07(c(2:4))
     case (8)
       cycle
     case (9)
       print *, "9. Tag:"
-      call Problem09(c(2:3))
+      call Problem09(c(2:4))
     case (10)
       print *, "10. Tag:"
-      call Problem10(c(2:3))
+      call Problem10(c(2:4))
     case (11)
       print *, "11. Tag:"
-      call Problem11(c(2:3))
+      call Problem11(c(2:4))
     case default
       cycle
     end select
-    print "(3(a,f0.3))", "Laufzeiten: ", (c(2)-c(1))/rate, " ", (c(3)-c(2))/rate, " ", (c(3)-c(1))/rate
-    t = t + (c(3) - c(1)) ! ignore destructor time from total time
+    print *, ""
+    print "(a)", "            Einlesen, Teil 1, Teil 2"
+    print "(3(a,f0.3))", "Laufzeiten:     ", (c(2)-c(1))/rate, "    ", (c(3)-c(2))/rate, "    ", (c(4)-c(3))/rate
+    t = t + (c(4) - c(1)) ! ignore destructor time from total time
+    print *, ""
     print *, ""
   end do
-  print "(a,f0.3)", "Gesamte Laufzeit (ohne Destruktoren): ", t/rate
+  print "(a,f0.3)", "Gesamte Laufzeit sämtlicher Probleme (ohne Destruktoren): ", t/rate
 
   print *, "Frohe Weihnachten! Tschüss!"
 

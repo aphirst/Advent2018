@@ -68,13 +68,14 @@ contains
   end subroutine
 
   subroutine Problem02(c)
-    integer,       intent(out)              :: c(2)
+    integer,       intent(out)              :: c(3)
     character(26),              allocatable :: strings(:)
     integer                                 :: i, j, k, twice, thrice, checksum
     integer,                    allocatable :: diff(:)
     character(26)                           :: string_common
 
     call ReadStrings(strings)
+    call system_clock(c(1))
 
     ! Part 1: "Count the number of boxes with an ID containing exactly two of
     ! any letter and then separately with exactly three of any letter.
@@ -90,7 +91,7 @@ contains
 
     print "(a,i0)", "Ergebnis 1: ", checksum
     print "(a,i0)", "Richtig:    ", 7808
-    call system_clock(c(1))
+    call system_clock(c(2))
 
     ! Part 2: "What letters are common between the two correct box IDs?
     ! These will differ by exactly one character at the same position in both strings."
@@ -118,7 +119,7 @@ contains
 
     print "(3a)", "Ergebnis 2: ", string_common
     print "(2a)", "Richtig:    ", "efmyhuckqldtwjyvisipargno"
-    call system_clock(c(2))
+    call system_clock(c(3))
   end subroutine
 
 end module

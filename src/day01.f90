@@ -54,19 +54,20 @@ contains
 
   subroutine Problem01(c)
     ! use a hash table of binary search trees
-    integer,      intent(out)              :: c(2)
+    integer,      intent(out)              :: c(3)
     integer                                :: total, i, hash
     integer,                   allocatable :: diffs(:)
     type(Bucket)                           :: mybuckets(N)
     logical                                :: is_duplicate
 
     call ReadDiffs(diffs)
+    call system_clock(c(1))
 
     ! Part 1: "What is the resulting frequency after all of the changes in
     ! frequency have been applied?"
     print "(a,i0)", "Ergebnis 1: ", sum(diffs)
     print "(a,i0)", "Richtig:    ", 402
-    call system_clock(c(1))
+    call system_clock(c(2))
 
     ! Part 2: "What is the first frequency your device reaches twice?"
     total = 0
@@ -83,7 +84,7 @@ contains
 
     print "(a,i0)", "Ergebnis 2: ", total
     print "(a,i0)", "Richtig:    ", 481
-    call system_clock(c(2))
+    call system_clock(c(3))
 
     do i = 1, N
       call Tree_Destroy(mybuckets(i)%head)

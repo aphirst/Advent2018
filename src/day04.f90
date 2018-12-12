@@ -150,17 +150,19 @@ contains
   end subroutine
 
   subroutine Problem04(c)
-    integer,     intent(out)              :: c(2)
+    integer,     intent(out)              :: c(3)
     type(Night),              allocatable :: nights(:)
     integer,                  allocatable :: guard_ids(:), sleep(:), guard_bestmins(:), bestincidences(:)
     integer                               :: i, bestguard, bestminute
 
     call ParseNights(nights)
-    call UniqueGuards(nights, guard_ids)
+    call system_clock(c(1))
 
     ! Part 1: "Find the guard that has the most minutes asleep. What minute
     ! does that guard spend asleep the most? What is the ID of the guard you
     ! chose multiplied by the minute you chose?"
+    call UniqueGuards(nights, guard_ids)
+
     allocate(sleep(size(guard_ids)))
     do i = 1, size(guard_ids)
       call TotalSleepForGuard(nights, guard_ids(i), sleep(i))
@@ -170,7 +172,7 @@ contains
 
     print "(a,i0)", "Ergebnis 1: ", bestguard * bestminute
     print "(a,i0)", "Richtig:    ", 146622
-    call system_clock(c(1))
+    call system_clock(c(2))
 
     ! Part 2: "Of all guards, which guard is most frequently asleep on the same
     ! minute? What is the ID of that multiplied by that minute?"
@@ -184,7 +186,7 @@ contains
 
     print "(a,i0)", "Ergebnis 2: ", bestguard * bestminute
     print "(a,i0)", "Richtig:    ", 31848
-    call system_clock(c(2))
+    call system_clock(c(3))
   end subroutine
 
 end module

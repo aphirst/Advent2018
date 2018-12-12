@@ -165,12 +165,13 @@ contains
   end subroutine
 
   subroutine Problem10(c)
-    integer,     intent(out) :: c(2)
+    integer,     intent(out) :: c(3)
     type(Field)              :: myfield
     integer                  :: tleft, t1, t2, tright, iter
     type(BBox)               :: bb1, bb2
 
     call myfield%ReadStars()
+    call system_clock(c(1))
 
     ! Part 1: "What message will eventually appear in the sky?"
 
@@ -178,8 +179,8 @@ contains
     ! furthermore, solution bounding box must necessarily be inside any current bounding box
     ! => for 2 stars which intersect, solution must lie in the neighbourhood of their intersection t
     ! (stars with equal velocities will maintain constant separation)
-
     t1 = myfield%Predict()
+
     ! worst possible case is as follows:
     ! bounding box of solution is square of side N
     ! in solution, star on one side moving horizontaly, star on other side moving vertically
@@ -214,12 +215,12 @@ contains
     print "(a)",  "Ergebnis 1: "
     call myfield%Plot(t1)
     print "(2a)", "Richtig:    ", "RPNNXFZR"
-    call system_clock(c(1))
+    call system_clock(c(2))
 
     ! Part 2: "Exactly how many seconds would they have needed to wait for that message to appear?"
     print "(a,i0)", "Ergebnis 2: ", t1
     print "(a,i0)", "Richtig:    ", 10946
-    call system_clock(c(2))
+    call system_clock(c(3))
 
   contains
 

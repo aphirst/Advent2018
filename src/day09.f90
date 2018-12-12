@@ -171,9 +171,12 @@ contains
   end subroutine
 
   subroutine Problem09(c)
-    integer,    intent(out) :: c(2)
+    integer,    intent(out) :: c(3)
     type(Ring)              :: game1, game2
     integer                 :: i
+
+    ! no input file for this problem
+    call system_clock(c(1))
 
     ! Part 1: "What is the winning Elf's score?"
     call game1%Create()
@@ -184,7 +187,7 @@ contains
 
     print "(a,i0)", "Ergebnis 1: ", maxval(game1%score)
     print "(a,i0)", "Richtig:    ", 439341
-    call system_clock(c(1))
+    call system_clock(c(2))
 
     ! Part 2: "What would the new winning Elf's score be if the number of the last marble were 100 times larger?"
     call game2%Create()
@@ -195,7 +198,7 @@ contains
 
     print "(a,i0)", "Ergebnis 2: ", maxval(game2%score)
     print "(a,i0)", "Richtig:    ", 3566801385_int64
-    call system_clock(c(2))
+    call system_clock(c(3))
 
     call game1%Destroy()
     call game2%Destroy()

@@ -36,15 +36,16 @@ contains
   end subroutine
 
   subroutine Problem07(c)
-    integer                             :: c(2)
     type(Edge),             allocatable :: edges(:)
     integer,                allocatable :: nodes(:), sorted_ids(:)
     type(Graph)                         :: mygraph
     logical                             :: is_cyclic
     integer,     parameter              :: num_workers = 5, delay = 60
     integer                             :: timestamp
+    integer,     intent(out)              :: c(3)
 
     call ReadEdgesNodes(edges, nodes)
+    call system_clock(c(1))
     ! Part 1: "In what order should the steps in your instructions be completed?"
 
     ! run Khan's algorithm
@@ -55,7 +56,6 @@ contains
 
     print "(*(a))", "Ergebnis 1: ", achar(sorted_ids)
     print "(2a)",   "Richtig:    ", "BGJCNLQUYIFMOEZTADKSPVXRHW"
-    call system_clock(c(1))
 
     call system_clock(c(2))
   end subroutine

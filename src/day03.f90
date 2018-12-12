@@ -124,20 +124,21 @@ contains
   end subroutine
 
   subroutine Problem03(c)
-    integer,     intent(out)              :: c(2)
+    integer,     intent(out)              :: c(3)
     type(Claim),              allocatable :: claims(:)
     integer                               :: i, j
     integer,                  allocatable :: fabric(:,:)
     logical,                  allocatable :: disqualified(:)
 
     call ReadClaims(claims)
+    call system_clock(c(1))
 
     ! Part 1: "How many square inches of fabric are within two or more claims?"
     call FillFabric(fabric, claims)
 
     print "(a,i0)", "Ergebnis 1: ", count(fabric > 1)
     print "(a,i0)", "Richtig:    ", 110827
-    call system_clock(c(1))
+    call system_clock(c(2))
 
     ! Part 2: "What is the ID of the only claim that doesn't overlap?"
     !print "(a,i0)", "Ergebnis 2: ", pack([(i, i = 1, size(claims))], .not. disqualified)
@@ -158,7 +159,7 @@ contains
 
     print "(a,i0)", "Ergebnis 2: ", pack([(i, i = 1, size(claims))], .not. disqualified)
     print "(a,i0)", "Richtig:    ", 116
-    call system_clock(c(2))
+    call system_clock(c(3))
   end subroutine
 
 end module
