@@ -4,6 +4,8 @@ module Day07
 
   implicit none
 
+  integer, parameter :: num_workers = 5
+
   private
   public Problem07
 
@@ -36,28 +38,40 @@ contains
   end subroutine
 
   subroutine Problem07(c)
-    type(Edge),             allocatable :: edges(:)
-    integer,                allocatable :: nodes(:), sorted_ids(:)
-    type(Graph)                         :: mygraph
-    logical                             :: is_cyclic
-    integer,     parameter              :: num_workers = 5, delay = 60
-    integer                             :: timestamp
     integer,     intent(out)              :: c(3)
+    type(Edge),               allocatable :: edges(:)
+    integer,                  allocatable :: nodes(:), sorted_ids(:)
+    type(Graph)                           :: mygraph
+    logical                               :: is_cyclic
+    integer                               :: timestamp
 
     call ReadEdgesNodes(edges, nodes)
     call system_clock(c(1))
+
     ! Part 1: "In what order should the steps in your instructions be completed?"
+    call mygraph%Create(edges, nodes)
 
     ! run Khan's algorithm
-    call mygraph%Create(edges, nodes)
-    allocate(sorted_ids(0))
     call mygraph%TopologicalSort(sorted_ids, is_cyclic)
     if (is_cyclic) error stop "Ergebener Baum enthält Schleifen."
 
     print "(*(a))", "Ergebnis 1: ", achar(sorted_ids)
     print "(2a)",   "Richtig:    ", "BGJCNLQUYIFMOEZTADKSPVXRHW"
-
     call system_clock(c(2))
+
+    ! Part 2: "With 5 workers and the 60+ second step durations described
+    ! above, how long will it take to complete all of the steps?"
+    call mygraph%WorkerSort(num_workers, WhenCompleted, sorted_ids, timestamp, is_cyclic)
+    print "(a,i0)", "Ergebnis 2: ", timestamp
+    print "(a,i0)", "Richtig:    ", 1017
+    call system_clock(c(3))
+
+  contains
+    integer pure function WhenCompleted(timestamp, popped)
+      integer, intent(in) :: timestamp, popped
+
+      whencompleted = timestamp + 60 + mygraph%nodes(popped) - iachar("A") + 1
+    end function
   end subroutine
 
 end module

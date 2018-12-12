@@ -24,7 +24,7 @@ module Graphs
     ! so on a directed node graph left points to right
     integer :: left, right
   contains
-    procedure :: IsEqual => Edge_IsEqual
+    procedure :: IsEqual      => Edge_IsEqual
     generic   :: operator(==) => IsEqual
   end type
 
@@ -40,10 +40,18 @@ module Graphs
     integer,    allocatable :: nodes(:)
     type(List), allocatable :: lists(:)
   contains
-    procedure :: Create => Graph_Create
-    procedure :: AddNode => Graph_AddNode
-    ! procedure :: GetNodeIndex
+    procedure :: Create          => Graph_Create
+    procedure :: AddNode         => Graph_AddNode
+    procedure :: InDegrees       => Graph_InDegrees
     procedure :: TopologicalSort => Graph_TopologicalSort
+    procedure :: WorkerSort      => Graph_WorkerSort
+  end type
+
+  ! each worker knows the node he's working on and the timestamp of its completion
+  type Worker
+    integer :: current_task, completion_time
+  contains
+    procedure :: SetTask => Worker_SetTask
   end type
 
   public
@@ -58,7 +66,7 @@ contains
 
   function Graph_GetAllIDs(edges) result(ids)
     ! get them then sorts them
-    ! sorting should be a separate "tree sort"
+    ! sorting should be a separate "tree sort", or binary sort
     type(Edge), intent(in)              :: edges(:) ! array prevents type-bound
     integer                             :: i
     type(Tree),             pointer     :: id_tree => NULL() ! prevents PURE
@@ -96,10 +104,10 @@ contains
   end subroutine
 
   subroutine Graph_AddNode(mygraph, myedge)
-    class(Graph), intent(in out) :: mygraph
-    type(Edge),   intent(in)     :: myedge
-    integer                      :: i, left_index, right_index
-    integer,      allocatable    :: left_indices(:), right_indices(:)
+    class(Graph), intent(in out)              :: mygraph
+    type(Edge),   intent(in)                  :: myedge
+    integer                                   :: i, left_index, right_index
+    integer,                      allocatable :: left_indices(:), right_indices(:)
 
     ! find myedge%left in mygraph%nodes, assumes `mygraph` prepared in advance
     allocate(left_indices(0))
@@ -133,6 +141,21 @@ contains
     end do
   end subroutine
 
+  pure function Graph_InDegrees(this) result(in_degrees)
+    class(Graph), intent(in) :: this
+    integer                  :: i, j, in_degrees(this%N)
+
+    in_degrees(:) = 0
+    do i = 1, this%N
+      ! in_degree(j) is how many vertexes point into this vertex
+      do j = 1, size(in_degrees)
+        if ( any(this%lists(i)%keys == j) ) then
+          in_degrees(j) = in_degrees(j) + 1
+        end if
+      end do
+    end do
+  end function
+
   subroutine Graph_TopologicalSort(this, sorted_ids, is_cyclic)
     ! use "in-degree" method, assumes no duplicate edges
     ! https://www.geeksforgeeks.org/topological-sorting-indegree-based-solution/
@@ -140,27 +163,15 @@ contains
     class(Graph), intent(in)               :: this
     integer,      intent(out), allocatable :: sorted_ids(:)
     logical,      intent(out)              :: is_cyclic
+    integer                                :: i, j, popped, cnt, in_degrees(this%N)
     type(Tree),                pointer     :: queued_nodes => NULL(), sorted_tree => NULL()
-    integer                                :: i, j, popped, cnt
-    integer,                   allocatable :: in_degree(:)
 
     ! traverse adjacency lists to fill in-degrees of edges
-    allocate(in_degree(0))
-    in_degree = [( 0, i = 1, this%N )]
-    do i = 1, this%N
-      ! in_degree(j) is how many vertexes point into this vertex
-      do j = 1, size(in_degree)
-        if ( any(this%lists(i)%keys == j) ) then
-          in_degree(j) = in_degree(j) + 1
-        end if
-      end do
-    end do
+    in_degrees = this%InDegrees()
 
     ! enqueue all nodes with in-degree 0
     do i = 1, this%N
-      if (in_degree(i) == 0) then
-        call Tree_Insert(queued_nodes, i)
-      end if
+      if (in_degrees(i) == 0) call Tree_Insert(queued_nodes, i)
     end do
 
     cnt = 0
@@ -171,13 +182,93 @@ contains
       ! decrement in-degrees of all nodes pointed to by the popped node
       do i = 1, size( this%lists(popped)%keys )
         j = this%lists(popped)%keys(i)
-        in_degree(j) = in_degree(j) - 1
+        in_degrees(j) = in_degrees(j) - 1
         ! enqueue all with zero in-degree (no other nodes point to them)
-        if (in_degree(j) == 0) then
-          call Tree_Insert(queued_nodes, j)
-        end if
+        if (in_degrees(j) == 0) call Tree_Insert(queued_nodes, j)
       end do
       cnt = cnt + 1
+    end do
+
+    ! graph is cyclic if some nodes never got queued
+    is_cyclic = (cnt /= this%N)
+    ! flatten output
+    allocate(sorted_ids(Tree_CountNodes(sorted_tree)))
+    sorted_ids(:) = Tree_InOrder(sorted_tree)
+    call Tree_Destroy(queued_nodes)
+    call Tree_Destroy(sorted_tree)
+  end subroutine
+
+  subroutine Worker_SetTask(this, popped, completion_time)
+    class(Worker), intent(in out) :: this
+    integer,       intent(in)     :: popped, completion_time
+
+    this%current_task = popped
+    this%completion_time = completion_time
+  end subroutine
+
+  subroutine Graph_WorkerSort(this, num_workers, WhenCompleted, sorted_ids, timestamp, is_cyclic)
+    class(Graph), intent(in)               :: this
+    integer,      intent(in)               :: num_workers
+    integer,      intent(out), allocatable :: sorted_ids(:)
+    integer,      intent(out)              :: timestamp
+    logical,      intent(out)              :: is_cyclic
+    integer                                :: i, j, k, cnt, popped, in_degrees(this%N)
+    type(Worker)                           :: workers(num_workers)
+    type(Tree),                pointer     :: queued_nodes => NULL(), sorted_tree => NULL()
+
+    interface
+      integer pure function WhenCompleted(timestamp, popped)
+        integer, intent(in) :: timestamp, popped
+      end function
+    end interface
+
+    ! traverse adjacency lists to fill in-degrees of edges
+    in_degrees = this%InDegrees()
+
+    ! enqueue all nodes with in-degree 0
+    do i = 1, this%N
+      if (in_degrees(i) == 0) call Tree_Insert(queued_nodes, i)
+    end do
+
+    timestamp = 0
+    workers(:)%completion_time = 0
+    cnt = 0
+
+    do while ( (Tree_CountNodes(queued_nodes) > 0) .or. (count(workers%completion_time>timestamp)>0) )
+      ! by "skipping" timestamps, every loop iteration should complete at least one task
+      ! does NOT guarantee that every iteration adds another task to the queue
+      if ( count(workers%completion_time <= timestamp) < 1 ) error stop "Logikfehler: Keine freien Arbeiter."
+      do k = 1, num_workers
+        ! pop as many tasks as possible and assign them to any free workers
+        if (workers(k)%completion_time <= timestamp) then
+          if (Tree_CountNodes(queued_nodes) > 0) then
+            call Tree_PopSmallest(queued_nodes, popped)
+            ! use closure on WhenCompleted() for a generic way to specify the delay function
+            call workers(k)%SetTask(popped, WhenCompleted(timestamp, popped))
+          end if
+        end if
+      end do
+
+      ! skip to next busy-worker completion time
+      if ( any(workers%completion_time >= timestamp) ) then
+        timestamp = minval(workers%completion_time, 1, workers%completion_time > timestamp)
+      end if
+
+      ! from all workers who complete at this timestamp, gather their "ready" nodes
+      do k = 1, num_workers
+        if (workers(k)%completion_time == timestamp) then
+          popped = workers(k)%current_task
+          call Tree_Append(sorted_tree, this%nodes(popped))
+          ! decrement in-degrees of all nodes pointed to by the finished node
+          do i = 1, size( this%lists(popped)%keys )
+            j = this%lists(popped)%keys(i)
+            in_degrees(j) = in_degrees(j) - 1
+            ! enqueue all with zero in-degree (no other nodes point to them)
+            if (in_degrees(j) == 0) call Tree_Insert(queued_nodes, j)
+          end do
+          cnt = cnt + 1
+        end if
+      end do
     end do
 
     ! graph is cyclic if some nodes never got queued
