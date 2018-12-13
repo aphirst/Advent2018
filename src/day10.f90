@@ -212,6 +212,7 @@ contains
       end if
       iter = iter + 1
     end do
+
     print "(a)",  "Ergebnis 1: "
     call myfield%Plot(t1)
     print "(2a)", "Richtig:    ", "RPNNXFZR"

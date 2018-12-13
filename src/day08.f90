@@ -97,11 +97,13 @@ contains
     call ReadFlattenedTree(mytree)
     call system_clock(c(1))
 
+    ! Part 1: "What is the sum of all metadata entries?"
     subtotal = ParseFlattenedTree(mytree, myval, mylength) ! total tree length is unused
     print "(a,i0)", "Ergebnis 1: ", subtotal
     print "(a,i0)", "Richtig:    ", 37905
     call system_clock(c(2))
 
+    ! Part 2: "What is the value of the root node?"
     print "(a,i0)", "Ergebnis 2: ", myval
     print "(a,i0)", "Richtig:    ", 33891
     call system_clock(c(3))

@@ -92,7 +92,7 @@ contains
     type(Node),                   pointer  :: mynode
 
     if (this%IsEmpty()) then
-      error stop "Stapel ist bereits leer. Logikfehler."
+      error stop "Logikfehler: Stapel ist bereits leer."
     end if
     key = this%head%key
     mynode => this%head%next

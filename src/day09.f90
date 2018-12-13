@@ -100,7 +100,7 @@ contains
   subroutine Ring_Remove(this)
     ! "The marble located immediately clockwise of the marble that was
     ! removed becomes the new current marble."
-    ! before [a B c], current element "b", remove "b""
+    ! before [a B c], current element "b", remove "b"
     ! after  [a C d], current element "c"
     class(Ring),  intent(in out)          :: this
     type(Marble),                 pointer :: temp1 => NULL(), temp2 => NULL()
