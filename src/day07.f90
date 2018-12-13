@@ -62,6 +62,8 @@ contains
     ! Part 2: "With 5 workers and the 60+ second step durations described
     ! above, how long will it take to complete all of the steps?"
     call mygraph%WorkerSort(num_workers, WhenCompleted, sorted_ids, timestamp, is_cyclic)
+    if (is_cyclic) error stop "Ergebener Baum enthält Schleifen."
+
     print "(a,i0)", "Ergebnis 2: ", timestamp
     print "(a,i0)", "Richtig:    ", 1017
     call system_clock(c(3))

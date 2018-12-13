@@ -234,7 +234,7 @@ contains
     workers(:)%completion_time = 0
     cnt = 0
 
-    do while ( (Tree_CountNodes(queued_nodes) > 0) .or. (count(workers%completion_time>timestamp)>0) )
+    do while ( (Tree_CountNodes(queued_nodes) > 0) .or. (count(workers%completion_time>timestamp) > 0) )
       ! by "skipping" timestamps, every loop iteration should complete at least one task
       ! does NOT guarantee that every iteration adds another task to the queue
       if ( count(workers%completion_time <= timestamp) < 1 ) error stop "Logikfehler: Keine freien Arbeiter."
