@@ -22,6 +22,7 @@ program Advent2018
   use Day05
   use Day06
   use Day07
+  use Day08
   use Day09
   use Day10
   use Day11
@@ -64,7 +65,8 @@ program Advent2018
       print *, "7. Tag:"
       call Problem07(c(2:4))
     case (8)
-      cycle
+      print *, "8. Tag:"
+      call Problem08(c(2:4))
     case (9)
       print *, "9. Tag:"
       call Problem09(c(2:4))

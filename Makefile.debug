@@ -12,6 +12,7 @@ day04.f90 \
 day05.f90 \
 day06.f90 \
 day07.f90 \
+day08.f90 \
 day09.f90 \
 day10.f90 \
 day11.f90 \
@@ -27,6 +28,7 @@ day04.o \
 day05.o \
 day06.o \
 day07.o \
+day08.o \
 day09.o \
 day10.o \
 day11.o \
@@ -84,6 +86,8 @@ day07.o: \
     day07.f90 \
     graphs.o \
     trees.o
+day08.o: \
+    day09.f90
 day09.o: \
     day09.f90
 day10.o: \
@@ -99,6 +103,7 @@ main.o: \
     day05.o \
     day06.o \
     day07.o \
+    day08.o \
     day09.o \
     day10.o \
     day11.o
