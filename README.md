@@ -15,12 +15,12 @@ Compiled using `GNU Fortran (GCC) 8.2.1 20181127`.
 <tr><th>03</th> <td>0.014 s</td><td>0.003 s</td><td>0.002 s</td> <td>0.013 s</td><td>0.003 s</td><td>0.003 s</td> <td>0.046 s</td><td>0.021 s</td><td>0.005 s</td></tr>
 <tr><th>04</th> <td>0.032 s</td><td>0.000 s</td><td>0.000 s</td> <td>0.028 s</td><td>0.000 s</td><td>0.000 s</td> <td>0.077 s</td><td>0.000 s</td><td>0.001 s</td></tr>
 <tr><th>05</th> <td>0.016 s</td><td>0.003 s</td><td>0.028 s</td> <td>0.016 s</td><td>0.004 s</td><td>0.035 s</td> <td>0.047 s</td><td>0.011 s</td><td>0.083 s</td></tr>
-<tr><th>06</th> <td>0.011 s</td><td>0.011 s</td><td>0.003 s</td> <td>0.011 s</td><td>0.012 s</td><td>0.002 s</td> <td>0.036 s</td><td>0.034 s</td><td>0.017 s</td></tr>
+<tr><th>06</th> <td>0.011 s</td><td>0.011 s</td><td>0.002 s</td> <td>0.011 s</td><td>0.012 s</td><td>0.003 s</td> <td>0.036 s</td><td>0.034 s</td><td>0.017 s</td></tr>
 <tr><th>07</th> <td>0.011 s</td><td>0.000 s</td><td>0.000 s</td> <td>0.012 s</td><td>0.000 s</td><td>0.000 s</td> <td>0.035 s</td><td>0.000 s</td><td>0.000 s</td></tr>
 <tr><th>08</th> <td>0.015 s</td><td>0.000 s</td><td>0.000 s</td> <td>0.017 s</td><td>0.000 s</td><td>0.000 s</td> <td>0.047 s</td><td>0.001 s</td><td>0.000 s</td></tr>
 <tr><th>09</th> <td>0.000 s</td><td>0.003 s</td><td>0.277 s</td> <td>0.000 s</td><td>0.003 s</td><td>0.369 s</td> <td>0.000 s</td><td>0.008 s</td><td>0.994 s</td></tr>
 <tr><th>10</th> <td>0.015 s</td><td>0.000 s</td><td>0.000 s</td> <td>0.013 s</td><td>0.000 s</td><td>0.000 s</td> <td>0.041 s</td><td>0.000 s</td><td>0.000 s</td></tr>
-<tr><th>11</th> <td>0.000 s</td><td>0.004 s</td><td>0.039 s</td> <td>0.000 s</td><td>0.003 s</td><td>0.041 s</td> <td>0.000 s</td><td>0.013 s</td><td>0.097 s</td></tr>
+<tr><th>11</th> <td>0.000 s</td><td>0.003 s</td><td>0.039 s</td> <td>0.000 s</td><td>0.004 s</td><td>0.041 s</td> <td>0.000 s</td><td>0.013 s</td><td>0.097 s</td></tr>
 <tr></tr>
 <tr><th>Total</th><th colspan=3>0.536 s</th><th colspan=3>0.643 s</th><th colspan=3>1.666 s</th></tr>
 </table>
