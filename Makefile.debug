@@ -43,7 +43,7 @@ FC = gfortran
 LD = gfortran
 IDIR = 
 CFLAGS = -Wextra -Wall -lrt -pg -g -Og  -J$(OBJS_DIR) $(IDIR)
-LFLAGS = -lrt -pg 
+LFLAGS = -pg 
 LIBS = 
 
 VPATH = $(SRC_DIR_f90d1):$(OBJS_DIR)
